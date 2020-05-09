@@ -1,0 +1,1 @@
+Projeto de exemplo do curso de Angular com DotnetCore
