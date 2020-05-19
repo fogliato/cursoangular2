@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, TemplateRef } from '@angular/core';
 import { EventoService } from '../services/evento.service';
 import { Evento } from '../models/Evento';
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-eventos',
@@ -8,23 +9,37 @@ import { Evento } from '../models/Evento';
   styleUrls: ['./eventos.component.css'],
 })
 export class EventosComponent implements OnInit {
+  eventosFiltrados: Evento[];
+  eventos: Evento[];
+  imagemLargura = 50;
+  imagemMargem = 2;
+  mostrarImagem = false;
   filtroList: string;
+  modalRef: BsModalRef;
+
+  constructor(
+    private eventoService: EventoService,
+    private modalService: BsModalService
+  ) {}
+
+  ngOnInit() {
+    this.getEventos();
+  }
+
   get filtroLista(): string {
     return this.filtroList;
   }
+
   set filtroLista(value: string) {
     this.filtroList = value;
     this.eventosFiltrados = this.filtroLista
       ? this.filtrarEventos(this.filtroLista)
       : this.eventos;
   }
-  eventosFiltrados: Evento[];
-  eventos: Evento[];
-  imagemLargura = 50;
-  imagemMargem = 2;
-  mostrarImagem = false;
 
-  constructor(private eventoService: EventoService) {}
+  openModal(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template);
+  }
 
   filtrarEventos(filtrarPor: string): Evento[] {
     filtrarPor = filtrarPor.toLocaleLowerCase();
@@ -33,10 +48,6 @@ export class EventosComponent implements OnInit {
         evento.tema.toLocaleLowerCase().indexOf(filtrarPor) !== -1 ||
         evento.local.toLocaleLowerCase().indexOf(filtrarPor) !== -1
     );
-  }
-
-  ngOnInit() {
-    this.getEventos();
   }
 
   alternarImagem() {
