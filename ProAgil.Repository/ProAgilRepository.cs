@@ -12,6 +12,7 @@ namespace ProAgil.Repository
         public ProAgilRepository(ProAgilContext context)
         {
             _context = context;
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
         //Gerais
         public void Add<T>(T entity) where T : class
@@ -41,12 +42,13 @@ namespace ProAgil.Repository
                 .Include(e => e.RedesSociais);
             if (includePalestrantes)
                 query.Include(e => e.PalestrantesEventos).ThenInclude(p => p.Palestrante);
-            query.OrderByDescending(e => e.DataEvento);
+            query.AsNoTracking()
+            .OrderByDescending(e => e.DataEvento);
             return await query.ToArrayAsync();
         }
 
         //EVENTOS
-        public async Task<Evento> GetAllEventoAsyncById(int id, bool includePalestrantes)
+        public async Task<Evento> GetEventoByIdAsync(int id, bool includePalestrantes)
         {
             IQueryable<Evento> query = _context.Eventos
                 .Include(e => e.Lotes)
@@ -55,7 +57,7 @@ namespace ProAgil.Repository
                 query.Include(e => e.PalestrantesEventos).ThenInclude(p => p.Palestrante);
 
             query.Where(e => e.Id == id);
-            return await query.FirstOrDefaultAsync();
+            return await query.AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task<Evento[]> GetAllEventoAsyncByTema(string Tema, bool includePalestrantes)
@@ -71,7 +73,7 @@ namespace ProAgil.Repository
         }
 
         //PALESTRANTES
-        public async Task<Palestrante> GetAllPalestranteAsync(int id, bool includeEvento = false)
+        public async Task<Palestrante> GetPalestranteByIdAsync(int id, bool includeEvento = false)
         {
             IQueryable<Palestrante> query = _context.Palestrante
                 .Include(p => p.RedesSociais);
