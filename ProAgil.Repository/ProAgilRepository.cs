@@ -56,8 +56,8 @@ namespace ProAgil.Repository
             if (includePalestrantes)
                 query.Include(e => e.PalestrantesEventos).ThenInclude(p => p.Palestrante);
 
-            query.Where(e => e.Id == id);
-            return await query.AsNoTracking().FirstOrDefaultAsync();
+            ;
+            return await query.Where(e => e.Id == id).AsNoTracking().FirstOrDefaultAsync();
         }
 
         public async Task<Evento[]> GetAllEventoAsyncByTema(string Tema, bool includePalestrantes)

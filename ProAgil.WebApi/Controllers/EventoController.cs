@@ -76,7 +76,7 @@ namespace ProAgil.WebApi.Controllers
             return BadRequest();
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, Evento model)
         {
             try
@@ -94,17 +94,21 @@ namespace ProAgil.WebApi.Controllers
             return BadRequest();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 var evento = await _repo.GetEventoByIdAsync(id, false);
-                if ( evento == null)
+                if (evento == null)
                     return NotFound();
+                else { Console.WriteLine($"Excluindo evento {id}"); }
                 _repo.Delete(evento);
                 if (await _repo.SaveChangesAsync())
+                {
+                    Console.WriteLine("Evento excluido com sucesso");
                     return Ok();
+                }
             }
             catch (Exception)
             {
