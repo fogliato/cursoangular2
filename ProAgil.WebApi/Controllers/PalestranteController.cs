@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProAgil.Domain;
 using ProAgil.Repository;
+using ProAgil.WebApi.Dtos;
 
 namespace ProAgil.WebApi.Controllers
 {
@@ -12,10 +15,12 @@ namespace ProAgil.WebApi.Controllers
     public class PalestranteController: ControllerBase
     {
         private readonly IProAgilRepository _repo;
+        private readonly IMapper _map;
 
-        public PalestranteController(IProAgilRepository repo)
+        public PalestranteController(IProAgilRepository repo, IMapper map)
         {
             _repo = repo;
+            _map = map;
         }
 
         [HttpGet("{id}")]
@@ -23,7 +28,8 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
-                var results = await _repo.GetPalestranteByIdAsync(id, true);
+                var domain = await _repo.GetPalestranteByIdAsync(id, true);
+                var results = _map.Map<PalestranteDto>(domain);
                 return Ok(results);
             }
             catch (Exception)
@@ -37,7 +43,8 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
-                var results = await _repo.GetAllPalestrantesAsyncByName(name, true);
+                var domain = await _repo.GetAllPalestrantesAsyncByName(name, true);
+                var results = _map.Map<IEnumerable<PalestranteDto>>(domain);
                 return Ok(results);
             }
             catch (Exception)

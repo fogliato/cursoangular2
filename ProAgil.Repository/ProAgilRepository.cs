@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -37,14 +38,28 @@ namespace ProAgil.Repository
 
         public async Task<Evento[]> GetAllEventoAsync(bool includePalestrantes = false)
         {
-            IQueryable<Evento> query = _context.Eventos
-                .Include(e => e.Lotes)
-                .Include(e => e.RedesSociais);
-            if (includePalestrantes)
-                query.Include(e => e.PalestrantesEventos).ThenInclude(p => p.Palestrante);
-            query.AsNoTracking()
-            .OrderByDescending(e => e.DataEvento);
-            return await query.ToArrayAsync();
+            try
+            {
+                IQueryable<Evento> query = _context.Eventos
+                    .Include(c => c.Lotes)
+                    .Include(c => c.RedesSociais);
+
+                if (includePalestrantes)
+                {
+                    query = query
+                        .Include(pe => pe.PalestrantesEventos);
+                        //.ThenInclude(p => p.Palestrante);
+                }
+
+                query = query.AsNoTracking()
+                    .OrderBy(c => c.Id);
+
+                return await query.ToArrayAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         //EVENTOS
