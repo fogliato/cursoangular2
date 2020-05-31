@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace ProAgil.WebApi.Dtos
@@ -9,8 +10,8 @@ namespace ProAgil.WebApi.Dtos
         [Required]
         public decimal Preco { get; set; }
         [Required]
-        public string DataInicio { get; set; }
-        public string DataFim { get; set; }
+        public DateTime DataInicio { get; set; }
+        public DateTime DataFim { get; set; }
         [Range(2,50000, ErrorMessage="A quantidade de pessoas deve ser entre 2 e 50 000")]
         public int Quantidade { get; set; }       
         

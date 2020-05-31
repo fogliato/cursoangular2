@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -7,10 +8,10 @@ namespace ProAgil.WebApi.Dtos
     {
         public int Id { get; set; }
         [Required]
-        [StringLength(100, MinimumLength=2, ErrorMessage="O local deve ter no mimo 100 caracteres e no mínimo 2")]
+        [StringLength(100, MinimumLength=2, ErrorMessage="O local deve ter no mimo 100 caracteres e no mínimo")]
         public string Local { get; set; }
         [Required]
-        public string DataEvento { get; set; }
+        public DateTime DataEvento { get; set; }
         [Required]
         public string Tema { get; set; }
         [Required]

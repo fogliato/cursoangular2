@@ -6,7 +6,10 @@ import { defineLocale } from 'ngx-bootstrap/chronos';
 import { ptBrLocale } from 'ngx-bootstrap/locale';
 import { BsLocaleService } from 'ngx-bootstrap/datepicker';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { error } from 'protractor';
+import { ToastrService } from 'ngx-toastr';
+import { timingSafeEqual } from 'crypto';
 defineLocale('pt-br', ptBrLocale);
 @Component({
   selector: 'app-eventos',
@@ -23,6 +26,7 @@ export class EventosComponent implements OnInit {
   modoEditar = false;
   filtroList: string;
   bodyDeletarEvento: string;
+  dataEvento: string;
   modalRef: BsModalRef;
   registerForm: FormGroup;
 
@@ -30,7 +34,9 @@ export class EventosComponent implements OnInit {
     private eventoService: EventoService,
     private modalService: BsModalService,
     private fb: FormBuilder,
-    private localeService: BsLocaleService
+    private localeService: BsLocaleService,
+    private toastr: ToastrService,
+    private datepipe: DatePipe
   ) {
     this.localeService.use('pt-br');
   }
@@ -88,11 +94,15 @@ export class EventosComponent implements OnInit {
         this.eventoService.postEvento(this.evento).subscribe(
           (novo: Evento) => {
             template.hide();
+            this.toastr.success('Novo evento salvo com sucesso', 'Sucesso!');
             this.getEventos();
           },
           // tslint:disable-next-line: no-shadowed-variable
           (error) => {
-            console.log(error);
+            this.toastr.error(
+              `Falha ao salvar o novo registro na base de dados.Mensagem: ${error}`,
+              'Erro'
+            );
           }
         );
       } else {
@@ -100,14 +110,19 @@ export class EventosComponent implements OnInit {
           { id: this.evento.id },
           this.registerForm.value
         );
+        console.log(this.evento);
         this.eventoService.putEvento(this.evento).subscribe(
           (novo: Evento) => {
             template.hide();
+            this.toastr.success('Edição gravada com sucesso', 'Sucesso!');
             this.getEventos();
           },
           // tslint:disable-next-line: no-shadowed-variable
           (error) => {
-            console.log(error);
+            this.toastr.error(
+              `Falha ao editar o registro na base de dados. Mensagem: ${error}`,
+              'Erro'
+            );
           }
         );
       }
@@ -124,10 +139,12 @@ export class EventosComponent implements OnInit {
     this.eventoService.deleteEvento(this.evento.id).subscribe(
       () => {
         modal.hide();
+        this.toastr.success('O Evento foi excluído com sucesso.', 'Sucesso!');
         this.getEventos();
       },
       // tslint:disable-next-line: no-shadowed-variable
       (error) => {
+        this.toastr.error('Falha ao excluir registro.', 'Erro');
         console.log(error);
       }
     );
@@ -140,15 +157,23 @@ export class EventosComponent implements OnInit {
       },
       // tslint:disable-next-line: no-shadowed-variable
       (error) => {
-        console.log(error);
+        this.toastr.error(
+          `Falha ao carregar registros. Mensagem: ${error}`,
+          'Erro'
+        );
       }
     );
   }
   loadForm(model: Evento, template: any) {
+    this.dataEvento = this.datepipe.transform(
+      model.dataEvento,
+      'dd/MM/yyyy HH:mm'
+    );
     this.openModal(template);
     this.modoEditar = true;
     this.evento = model;
     this.registerForm.patchValue(this.evento);
+    this.registerForm.patchValue({ dataEvento: this.dataEvento });
   }
   newRegister(template: any) {
     this.openModal(template);
