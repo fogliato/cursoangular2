@@ -17,6 +17,7 @@ defineLocale('pt-br', ptBrLocale);
   styleUrls: ['./eventos.component.css'],
 })
 export class EventosComponent implements OnInit {
+  title = 'Eventos';
   eventosFiltrados: Evento[];
   eventos: Evento[];
   evento: Evento;
@@ -29,6 +30,7 @@ export class EventosComponent implements OnInit {
   dataEvento: string;
   modalRef: BsModalRef;
   registerForm: FormGroup;
+  file: File;
 
   constructor(
     private eventoService: EventoService,
@@ -91,6 +93,10 @@ export class EventosComponent implements OnInit {
     if (this.registerForm.valid) {
       if (!this.modoEditar) {
         this.evento = Object.assign({}, this.registerForm.value);
+        this.eventoService.postUpload(this.file).subscribe();
+        const nomeArquivo = this.evento.imagemUrl.split('\\', 3);
+        this.evento.imagemUrl = nomeArquivo[2];
+        console.log('nome final-->' + this.evento.imagemUrl);
         this.eventoService.postEvento(this.evento).subscribe(
           (novo: Evento) => {
             template.hide();
@@ -149,6 +155,7 @@ export class EventosComponent implements OnInit {
       }
     );
   }
+
   getEventos() {
     this.eventoService.getEvento().subscribe(
       (eventosParam: Evento[]) => {
@@ -164,6 +171,14 @@ export class EventosComponent implements OnInit {
       }
     );
   }
+
+  onFileChange(event) {
+    const reader = new FileReader();
+    if (event.target.files && event.target.files.length) {
+      this.file = event.target.files;
+    }
+  }
+
   loadForm(model: Evento, template: any) {
     this.dataEvento = this.datepipe.transform(
       model.dataEvento,
@@ -175,6 +190,7 @@ export class EventosComponent implements OnInit {
     this.registerForm.patchValue(this.evento);
     this.registerForm.patchValue({ dataEvento: this.dataEvento });
   }
+
   newRegister(template: any) {
     this.openModal(template);
     this.modoEditar = false;

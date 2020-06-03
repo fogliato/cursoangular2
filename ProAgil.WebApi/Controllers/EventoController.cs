@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -36,6 +38,41 @@ namespace ProAgil.WebApi.Controllers
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha na conexão com o banco de dados");
             }
+        }
+
+        [HttpPost("upload")]
+        public async Task<IActionResult> Upload()
+        {
+            try
+            {
+                // var domain = await _repo.GetEventoByIdAsync(id, false);
+                // if (domain is null)
+                //     return BadRequest("Evento não encontrado");
+
+                var file = Request.Form.Files[0];
+                var folderName = Path.Combine("Resources", "Images");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                if (file.Length > 0)
+                {
+                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName;
+                    //domain.ImagemUrl = fileName;
+                    var fullPath = Path.Combine(pathToSave, fileName.Replace("\"", "").Trim());
+                    using(var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        await file.CopyToAsync(stream);
+                    }
+                }
+                // _repo.Update(domain);
+                // if (await _repo.SaveChangesAsync())
+                return Ok();
+                // else
+                //     return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha na conexão com o banco de dados");
+            }
+            catch (Exception)
+            {
+                return BadRequest("Erro ao tentar realizar upload");
+            }
+
         }
 
         [HttpGet("{id}")]
@@ -94,8 +131,8 @@ namespace ProAgil.WebApi.Controllers
                 if (domain == null)
                     return NotFound();
 
-                _map.Map(model,domain);
-                
+                _map.Map(model, domain);
+
                 _repo.Update(domain);
                 if (await _repo.SaveChangesAsync())
                     return Created($"/api/evento/{domain.Id}", _map.Map<EventoDto>(domain));

@@ -22,6 +22,7 @@ import { EventosComponent } from './eventos/eventos.component';
 import { PalestrantesComponent } from './palestrantes/palestrantes.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ContatosComponent } from './contatos/contatos.component';
+import { TituloComponent } from './shared/titulo/titulo.component';
 
 // pipes
 import { DateTimeFormatPipePipe } from './helpers/DateTimeFormatPipe.pipe';
@@ -33,12 +34,13 @@ import { EventoService } from './services/evento.service';
 @NgModule({
   declarations: [
     AppComponent,
+    TituloComponent,
     EventosComponent,
     NavComponent,
     PalestrantesComponent,
     DashboardComponent,
     ContatosComponent,
-    DateTimeFormatPipePipe
+    DateTimeFormatPipePipe,
   ],
   imports: [
     BrowserModule,
@@ -53,7 +55,11 @@ import { EventoService } from './services/evento.service';
     ReactiveFormsModule,
     NgxMaskModule.forRoot(),
     CommonModule,
-    ToastrModule.forRoot(),
+    ToastrModule.forRoot({
+      timeOut: 5000,
+      preventDuplicates: true,
+      progressBar: true,
+    }),
   ],
   providers: [EventoService, DatePipe],
   bootstrap: [AppComponent],
