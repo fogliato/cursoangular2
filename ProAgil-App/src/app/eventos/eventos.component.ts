@@ -24,13 +24,15 @@ export class EventosComponent implements OnInit {
   imagemLargura = 50;
   imagemMargem = 2;
   mostrarImagem = false;
-  modoEditar = false;
+  editMode = false;
   filtroList: string;
   bodyDeletarEvento: string;
   dataEvento: string;
   modalRef: BsModalRef;
   registerForm: FormGroup;
   file: File;
+  fileNameToUpload: string;
+  dataImagem: string;
 
   constructor(
     private eventoService: EventoService,
@@ -91,17 +93,13 @@ export class EventosComponent implements OnInit {
 
   salvarAlteracao(template: any) {
     if (this.registerForm.valid) {
-      if (!this.modoEditar) {
+      if (!this.editMode) {
         this.evento = Object.assign({}, this.registerForm.value);
-        this.eventoService.postUpload(this.file).subscribe();
-        const nomeArquivo = this.evento.imagemUrl.split('\\', 3);
-        this.evento.imagemUrl = nomeArquivo[2];
-        console.log('nome final-->' + this.evento.imagemUrl);
+        this.uploadAndAdjustFileName();
         this.eventoService.postEvento(this.evento).subscribe(
           (novo: Evento) => {
             template.hide();
             this.toastr.success('Novo evento salvo com sucesso', 'Sucesso!');
-            this.getEventos();
           },
           // tslint:disable-next-line: no-shadowed-variable
           (error) => {
@@ -116,12 +114,11 @@ export class EventosComponent implements OnInit {
           { id: this.evento.id },
           this.registerForm.value
         );
-        console.log(this.evento);
+        this.uploadAndAdjustFileName();
         this.eventoService.putEvento(this.evento).subscribe(
           (novo: Evento) => {
             template.hide();
             this.toastr.success('Edição gravada com sucesso', 'Sucesso!');
-            this.getEventos();
           },
           // tslint:disable-next-line: no-shadowed-variable
           (error) => {
@@ -132,6 +129,30 @@ export class EventosComponent implements OnInit {
           }
         );
       }
+    }
+  }
+
+  private uploadAndAdjustFileName() {
+    const nomeArquivo = this.evento.imagemUrl.split('\\', 3);
+    this.evento.imagemUrl = nomeArquivo[2];
+    this.dataImagem = new Date().getMilliseconds().toString();
+    if (this.editMode) {
+      this.evento.imagemUrl = this.fileNameToUpload;
+      this.eventoService
+        .postUpload(this.file, this.fileNameToUpload)
+        .subscribe(
+          () => {
+            this.getEventos();
+          }
+        );
+    } else {
+      this.eventoService
+        .postUpload(this.file, this.evento.imagemUrl)
+        .subscribe(
+          () => {
+            this.getEventos();
+          }
+        );
     }
   }
 
@@ -185,14 +206,16 @@ export class EventosComponent implements OnInit {
       'dd/MM/yyyy HH:mm'
     );
     this.openModal(template);
-    this.modoEditar = true;
-    this.evento = model;
+    this.editMode = true;
+    this.evento = Object.assign({}, model);
+    this.evento.imagemUrl = '';
+    this.fileNameToUpload = model.imagemUrl.toString();
     this.registerForm.patchValue(this.evento);
-    this.registerForm.patchValue({ dataEvento: this.dataEvento });
+    //this.registerForm.patchValue({ dataEvento: this.dataEvento });
   }
 
   newRegister(template: any) {
     this.openModal(template);
-    this.modoEditar = false;
+    this.editMode = false;
   }
 }
