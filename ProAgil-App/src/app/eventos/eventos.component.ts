@@ -211,7 +211,6 @@ export class EventosComponent implements OnInit {
     this.evento.imagemUrl = '';
     this.fileNameToUpload = model.imagemUrl.toString();
     this.registerForm.patchValue(this.evento);
-    //this.registerForm.patchValue({ dataEvento: this.dataEvento });
   }
 
   newRegister(template: any) {
