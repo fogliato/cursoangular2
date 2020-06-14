@@ -65,6 +65,8 @@ namespace ProAgil.WebApi.Controllers
             }
         }
 
+        [HttpPost("Login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(UserLoginDto dtoLogin)
         {
             try
