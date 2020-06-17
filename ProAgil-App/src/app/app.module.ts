@@ -23,7 +23,9 @@ import { PalestrantesComponent } from './palestrantes/palestrantes.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ContatosComponent } from './contatos/contatos.component';
 import { TituloComponent } from './shared/titulo/titulo.component';
-
+import { UserComponent } from './user/user.component';
+import { LoginComponent } from './user/login/login.component';
+import { RegistrationComponent } from './user/registration/registration.component';
 // pipes
 import { DateTimeFormatPipePipe } from './helpers/DateTimeFormatPipe.pipe';
 import { DatePipe } from '@angular/common';
@@ -41,6 +43,9 @@ import { EventoService } from './services/evento.service';
     DashboardComponent,
     ContatosComponent,
     DateTimeFormatPipePipe,
+    UserComponent,
+    LoginComponent,
+    RegistrationComponent
   ],
   imports: [
     BrowserModule,

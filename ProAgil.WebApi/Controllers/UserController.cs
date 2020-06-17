@@ -49,6 +49,7 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
+                Console.WriteLine("Inserindo novo usuário");
                 var user = _mapper.Map<User>(dtoUser);
                 var result = await _userManager.CreateAsync(user, dtoUser.Password);
                 var userToReturn = _mapper.Map<UserDto>(user);

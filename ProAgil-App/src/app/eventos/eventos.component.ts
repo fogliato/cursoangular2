@@ -140,19 +140,15 @@ export class EventosComponent implements OnInit {
       this.evento.imagemUrl = this.fileNameToUpload;
       this.eventoService
         .postUpload(this.file, this.fileNameToUpload)
-        .subscribe(
-          () => {
-            this.getEventos();
-          }
-        );
+        .subscribe(() => {
+          this.getEventos();
+        });
     } else {
       this.eventoService
         .postUpload(this.file, this.evento.imagemUrl)
-        .subscribe(
-          () => {
-            this.getEventos();
-          }
-        );
+        .subscribe(() => {
+          this.getEventos();
+        });
     }
   }
 
