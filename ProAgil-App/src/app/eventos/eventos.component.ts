@@ -10,6 +10,7 @@ import { DatePipe } from '@angular/common';
 import { error } from 'protractor';
 import { ToastrService } from 'ngx-toastr';
 import { timingSafeEqual } from 'crypto';
+
 defineLocale('pt-br', ptBrLocale);
 @Component({
   selector: 'app-eventos',
@@ -129,6 +130,7 @@ export class EventosComponent implements OnInit {
           }
         );
       }
+      this.getEventos();
     }
   }
 
