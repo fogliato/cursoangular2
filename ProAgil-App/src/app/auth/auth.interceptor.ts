@@ -1,0 +1,44 @@
+import { Injectable } from '@angular/core';
+import {
+  HttpInterceptor,
+  HttpRequest,
+  HttpHandler,
+  HttpEvent,
+  HttpHeaders,
+} from '@angular/common/http';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { AuthService } from '../services/auth.service';
+import { tap } from 'rxjs/internal/operators/tap';
+
+@Injectable({ providedIn: 'root' })
+export class AuthInterceptor implements HttpInterceptor {
+  constructor(private router: Router, private authService: AuthService) {}
+
+  intercept(
+    req: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
+    if (this.authService.loggedIn()) {
+      const cloneReq = req.clone({
+        headers: req.headers.set(
+          'Authorization',
+          `Bearer ${localStorage.getItem('token')}`
+        ),
+      });
+      return next.handle(cloneReq).pipe(
+        tap(
+          (succ) => {},
+          (err) => {
+            if (err.status === 401) {
+              this.router.navigateByUrl('user/login');
+            }
+          }
+        )
+      );
+    } else {
+      return next.handle(req.clone());
+    }
+    throw new Error('Method not implemented.');
+  }
+}
