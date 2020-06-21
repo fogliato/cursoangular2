@@ -14,6 +14,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { TabsModule } from 'ngx-bootstrap/tabs';
 
 // components
 import { AppComponent } from './app.component';
@@ -33,6 +34,7 @@ import { DatePipe } from '@angular/common';
 // services
 import { EventoService } from './services/evento.service';
 import { AuthInterceptor } from './auth/auth.interceptor';
+import { EventoEditComponent } from './eventos/eventoEdit/eventoEdit.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +49,7 @@ import { AuthInterceptor } from './auth/auth.interceptor';
     UserComponent,
     LoginComponent,
     RegistrationComponent,
+    EventoEditComponent
   ],
   imports: [
     BrowserModule,
@@ -66,6 +69,7 @@ import { AuthInterceptor } from './auth/auth.interceptor';
       preventDuplicates: true,
       progressBar: true,
     }),
+    TabsModule.forRoot()
   ],
   providers: [
     EventoService,

@@ -10,6 +10,7 @@ import { DatePipe } from '@angular/common';
 import { error } from 'protractor';
 import { ToastrService } from 'ngx-toastr';
 import { timingSafeEqual } from 'crypto';
+import { Router } from '@angular/router';
 
 defineLocale('pt-br', ptBrLocale);
 @Component({
@@ -41,7 +42,8 @@ export class EventosComponent implements OnInit {
     private fb: FormBuilder,
     private localeService: BsLocaleService,
     private toastr: ToastrService,
-    private datepipe: DatePipe
+    private datepipe: DatePipe,
+    private router: Router
   ) {
     this.localeService.use('pt-br');
   }
@@ -100,6 +102,7 @@ export class EventosComponent implements OnInit {
         this.eventoService.postEvento(this.evento).subscribe(
           (novo: Evento) => {
             template.hide();
+            this.getEventos();
             this.toastr.success('Novo evento salvo com sucesso', 'Sucesso!');
           },
           // tslint:disable-next-line: no-shadowed-variable
@@ -119,6 +122,7 @@ export class EventosComponent implements OnInit {
         this.eventoService.putEvento(this.evento).subscribe(
           (novo: Evento) => {
             template.hide();
+            this.getEventos();
             this.toastr.success('Edição gravada com sucesso', 'Sucesso!');
           },
           // tslint:disable-next-line: no-shadowed-variable
@@ -130,7 +134,6 @@ export class EventosComponent implements OnInit {
           }
         );
       }
-      this.getEventos();
     }
   }
 
@@ -209,6 +212,10 @@ export class EventosComponent implements OnInit {
     this.evento.imagemUrl = '';
     this.fileNameToUpload = model.imagemUrl.toString();
     this.registerForm.patchValue(this.evento);
+  }
+
+  editarDetalhado(model: Evento) {
+    this.router.navigate([`/evento/${model.id}/edit`]);
   }
 
   newRegister(template: any) {

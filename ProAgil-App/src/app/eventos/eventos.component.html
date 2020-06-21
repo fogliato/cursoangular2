@@ -65,10 +65,15 @@
                             (click)="loadForm(evento, template)">
                         <i class="fa fa-edit"></i>
                     </button>
-                    <button class="btn btn-sm btn-danger"
+                    <button class="btn btn-sm btn-danger mr-1"
                             tooltip="Excluir"
                             (click)="excluirEvento(evento, confirm)">
                         <i class="fa fa-eraser"></i>
+                    </button>
+                    <button class="btn btn-sm btn-warning"
+                            tooltip="editar detalhado"
+                            (click)="editarDetalhado(evento)">
+                        <i class="fa fa-edit"></i>
                     </button>
                 </div>
             </td>
@@ -96,7 +101,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 id="dialog-sizes-name1"
-                    class="modal-title pull-left">Large modal</h4>
+                    class="modal-title pull-left">EVENTO</h4>
                 <button type="button"
                         class="close pull-right"
                         (click)="template.hide()"
