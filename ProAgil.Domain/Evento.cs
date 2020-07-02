@@ -5,17 +5,16 @@ namespace ProAgil.Domain
 {
     public class Evento
     {
-        public int Id { get; set; }
-        public string Local { get; set; }
-        public DateTime DataEvento { get; set; }
-        public string Tema { get; set; }
-        public int QtdPessoas { get; set; }
-        public string Lote { get; set; }
-        public string ImagemUrl { get; set; }
-        public string Telefone { get; set; }
-        public string Email { get; set; }
+        public int Id { get; private set; }
+        public string Local { get; private set; }
+        public DateTime? DataEvento { get; private set; }
+        public string Tema { get; private set; }
+        public int QtdPessoas { get; private set; }
+        public string ImagemUrl { get; private set; }
+        public string Telefone { get; private set; }
+        public string Email { get; private set; }
         public List<Lote> Lotes { get; set; }
         public List<RedeSocial> RedesSociais { get; set; }
-        public List<PalestranteEvento> PalestrantesEventos { get; set; }
+        public List<PalestranteEvento> PalestrantesEventos { get; private set; }
     }
 }

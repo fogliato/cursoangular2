@@ -47,8 +47,8 @@ namespace ProAgil.Repository
                 if (includePalestrantes)
                 {
                     query = query
-                        .Include(pe => pe.PalestrantesEventos);
-                        //.ThenInclude(p => p.Palestrante);
+                        .Include(pe => pe.PalestrantesEventos)
+                        .ThenInclude(p => p.Palestrante);
                 }
 
                 query = query.AsNoTracking()

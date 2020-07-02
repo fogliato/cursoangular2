@@ -128,8 +128,8 @@
         </tab>
         <tab heading="Lotes">
           <div>
-            <div>
-              <fieldset formGroupName="lotes"
+            <div formArrayName="lotes" *ngFor="let lote of this.registerForm.get('lotes').value; let i=index"> 
+              <fieldset [formGroupName]="i"
                         class="form-group">
                 <legend class="d-flex justify-content-between capitalize">
                   {{'Lotes'}}
@@ -180,8 +180,8 @@
           </div>
         </tab>
         <tab heading="Redes Sociais">
-          <div>
-            <fieldset formGroupName="redesSociais"
+          <div formArrayName="redesSociais" *ngFor="let redeSocial of this.registerForm.get('redesSociais').value; let i=index">
+            <fieldset [formGroupName]="i"
                       class="form-group">
               <legend class="d-flex justify-content-between capitalize">
                 Redes Sociais
@@ -234,7 +234,7 @@
       <div class="form-row">
         <div class="form-group col-md-9">
           <input type="file"
-                 formControlName="imagemURL"
+                 formControlName="imagemUrl"
                  #file
                  (change)="onFileChange($event.target.files)"
                  class="form-control is-invalid"
@@ -244,7 +244,7 @@
       </div>
       <div class="card profile-card-2">
         <div class="card-img-block">
-          <img [src]="imagemURL"
+          <img [src]="imagemUrl"
                class="img-fluid"
                (click)="file.click()"
                style="cursor: pointer; width: 350px;"

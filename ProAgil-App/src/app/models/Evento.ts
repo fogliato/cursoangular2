@@ -7,7 +7,6 @@ export interface Evento {
   dataEvento: Date;
   tema: string;
   qtdPessoas: number;
-  lote: string;
   imagemUrl: string;
   telefone: string;
   email: string;

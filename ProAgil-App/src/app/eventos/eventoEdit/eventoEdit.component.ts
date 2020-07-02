@@ -17,7 +17,7 @@ export class EventoEditComponent implements OnInit {
   registerForm: FormGroup;
   evento: any = {};
   dataEvento: Date;
-  imagemURL = 'assets/img/upload.png';
+  imagemUrl = 'assets/img/upload.png';
   constructor(
     private eventoService: EventoService,
     private modalService: BsModalService,
@@ -43,23 +43,31 @@ export class EventoEditComponent implements OnInit {
       imagemUrl: ['', Validators.required],
       telefone: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      lotes: this.fb.group({
-        nome: ['', Validators.required],
-        quantidade: ['', Validators.required],
-        preco: ['', Validators.required],
-        dataInicio: [''],
-        dataFim: [''],
-      }),
-      redesSociais: this.fb.group({
-        nome: ['', Validators.required],
-        url: [''],
-      }),
+      lotes: this.fb.array([this.criaLote()]),
+      redesSociais: this.fb.array([this.criaRedeSocial()]),
+    });
+  }
+
+  criaLote(): FormGroup {
+    return this.fb.group({
+      nome: ['', Validators.required],
+      quantidade: ['', Validators.required],
+      preco: ['', Validators.required],
+      dataInicio: [''],
+      dataFim: [''],
+    });
+  }
+
+  criaRedeSocial(): FormGroup {
+    return this.fb.group({
+      nome: ['', Validators.required],
+      url: [''],
     });
   }
 
   onFileChange(file: FileList) {
     const reader = new FileReader();
-    reader.onload = (event: any) => this.imagemURL = event.target.result;
+    reader.onload = (event: any) => (this.imagemUrl = event.target.result);
     reader.readAsDataURL(File[0]);
   }
 }
