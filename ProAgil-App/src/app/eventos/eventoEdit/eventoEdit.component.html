@@ -128,12 +128,14 @@
         </tab>
         <tab heading="Lotes">
           <div>
-            <div formArrayName="lotes" *ngFor="let lote of this.registerForm.get('lotes').value; let i=index"> 
+            <div formArrayName="lotes"
+                 *ngFor="let lote of lotes.controls; let i=index">
               <fieldset [formGroupName]="i"
                         class="form-group">
                 <legend class="d-flex justify-content-between capitalize">
                   {{'Lotes'}}
-                  <button class="btn btn-sm btn-warning mb-1">remove</button>
+                  <button class="btn btn-sm btn-warning mb-1"
+                          (click)="removerLote(i)">remove</button>
                 </legend>
                 <div class="row">
                   <div class="form-group col-md-4">
@@ -174,18 +176,21 @@
                 </div>
               </fieldset>
             </div>
-            <button class="btn btn-outline-primary">
+            <button class="btn btn-outline-primary"
+                    (click)="adicionarLote()">
               Adicionar Lote
             </button>
           </div>
         </tab>
         <tab heading="Redes Sociais">
-          <div formArrayName="redesSociais" *ngFor="let redeSocial of this.registerForm.get('redesSociais').value; let i=index">
+          <div formArrayName="redesSociais"
+               *ngFor="let redeSocial of redesSociais.controls; let i=index">
             <fieldset [formGroupName]="i"
                       class="form-group">
               <legend class="d-flex justify-content-between capitalize">
                 Redes Sociais
-                <button class="btn btn-sm btn-warning mb-1">remove</button>
+                <button class="btn btn-sm btn-warning mb-1"
+                        (click)="removerRedeSocial(i)">remove</button>
               </legend>
               <div class="row">
                 <div class="form-group col-md-4">
@@ -216,7 +221,8 @@
               </div>
             </fieldset>
           </div>
-          <button class="btn btn-outline-primary">
+          <button class="btn btn-outline-primary"
+                  (click)="adicionarRedesSociais()">
             Adicionar Rede Social
           </button>
         </tab>
