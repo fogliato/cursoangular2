@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -128,20 +129,41 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
-                var domain = await _repo.GetEventoByIdAsync(id, false);
-                if (domain == null)
-                    return NotFound();
+                Console.WriteLine("Processando atualização de evento");
+                var evento = await _repo.GetEventoByIdAsync(id, false);
+                if (evento == null) return NotFound();
 
-                _map.Map(model, domain);
+                var idLotes = new List<int>();
+                var idRedesSociais = new List<int>();
 
-                _repo.Update(domain);
+                model.Lotes.ForEach(item => idLotes.Add(item.Id));
+                model.RedesSociais.ForEach(item => idRedesSociais.Add(item.Id));
+
+                var lotes = evento.Lotes.Where(
+                    lote => !idLotes.Contains(lote.Id)
+                ).ToArray();
+
+                var redesSociais = evento.RedesSociais.Where(
+                    rede => !idLotes.Contains(rede.Id)
+                ).ToArray();
+
+                if (lotes.Length > 0) _repo.DeleteRange(lotes);
+                if (redesSociais.Length > 0) _repo.DeleteRange(redesSociais);
+
+                _map.Map(model, evento);
+
+                _repo.Update(evento);
+
                 if (await _repo.SaveChangesAsync())
-                    return Created($"/api/evento/{domain.Id}", _map.Map<EventoDto>(domain));
+                {
+                    return Created($"/api/evento/{model.Id}", _map.Map<EventoDto>(evento));
+                }
             }
-            catch (Exception)
+            catch (System.Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha na conexão com o banco de dados");
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco Dados Falhou " + ex.Message);
             }
+
             return BadRequest();
         }
 

@@ -52,11 +52,21 @@ export class EventoEditComponent implements OnInit {
     this.eventoService.getEventoById(idEvento).subscribe(
       (eventoResult: Evento) => {
         this.evento = Object.assign({}, eventoResult);
-        this.evento.imagemUrl = '';
         this.fileNameToUpload = eventoResult.imagemUrl.toString();
         this.dataImagem = new Date().getMilliseconds().toString();
-        this.imagemUrl = `http://localhost:5000/Resources/Images/${this.evento.imagemUrl}?dtimg=${this.dataImagem}`;
+        if (this.evento.imagemUrl !== '') {
+          this.imagemUrl = `http://localhost:5000/Resources/Images/${this.evento.imagemUrl}?dtimg=${this.dataImagem}`;
+          this.evento.imagemUrl = '';
+        } else {
+          this.imagemUrl = 'assets/img/upload.png';
+        }
         this.registerForm.patchValue(this.evento);
+        this.evento.lotes.forEach((lote) => {
+          this.lotes.push(this.criaLote(lote));
+        });
+        this.evento.redesSociais.forEach((redeSocial) => {
+          this.redesSociais.push(this.criaRedeSocial(redeSocial));
+        });
       },
       // tslint:disable-next-line: no-shadowed-variable
       (error) => {
@@ -70,6 +80,7 @@ export class EventoEditComponent implements OnInit {
 
   validation() {
     this.registerForm = this.fb.group({
+      id: [],
       tema: ['', [Validators.required, Validators.minLength(4)]],
       local: ['', [Validators.required, Validators.minLength(2)]],
       dataEvento: ['', Validators.required],
@@ -77,34 +88,36 @@ export class EventoEditComponent implements OnInit {
       imagemUrl: [''],
       telefone: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      lotes: this.fb.array([this.criaLote()]),
-      redesSociais: this.fb.array([this.criaRedeSocial()]),
+      lotes: this.fb.array([this.criaLote({ id: 0 })]),
+      redesSociais: this.fb.array([this.criaRedeSocial({ id: 0 })]),
     });
   }
 
-  criaLote(): FormGroup {
+  criaLote(lote: any): FormGroup {
     return this.fb.group({
-      nome: ['', Validators.required],
-      quantidade: ['', Validators.required],
-      preco: ['', Validators.required],
-      dataInicio: [''],
-      dataFim: [''],
+      id: [lote.id],
+      nome: [lote.nome, Validators.required],
+      quantidade: [lote.quantidade, Validators.required],
+      preco: [lote.preco, Validators.required],
+      dataInicio: [lote.dataInicio],
+      dataFim: [lote.dataFim],
     });
   }
 
-  criaRedeSocial(): FormGroup {
+  criaRedeSocial(redeSocial: any): FormGroup {
     return this.fb.group({
-      nome: ['', Validators.required],
-      url: [''],
+      id: [redeSocial.id],
+      nome: [redeSocial.nome, Validators.required],
+      url: [redeSocial.url],
     });
   }
 
   adicionarLote() {
-    this.lotes.push(this.criaLote());
+    this.lotes.push(this.criaLote({ id: 0 }));
   }
 
   adicionarRedesSociais() {
-    this.redesSociais.push(this.criaRedeSocial());
+    this.redesSociais.push(this.criaRedeSocial({ id: 0 }));
   }
 
   removerLote(id: number) {
@@ -119,5 +132,42 @@ export class EventoEditComponent implements OnInit {
     const reader = new FileReader();
     reader.onload = (event: any) => (this.imagemUrl = event.target.result);
     reader.readAsDataURL(file[0]);
+  }
+
+  salvarEvento() {
+    this.evento = Object.assign(
+      { id: this.evento.id },
+      this.registerForm.value
+    );
+    this.evento.imagemUrl = this.fileNameToUpload;
+    this.uploadAndAdjustFileName();
+
+    console.log(this.evento);
+    this.eventoService.putEvento(this.evento).subscribe(
+      (novo: Evento) => {
+        this.toastr.success('Alterações salvas com sucesso', 'Sucesso!');
+      },
+      // tslint:disable-next-line: no-shadowed-variable
+      (error) => {
+        this.toastr.error(
+          `Falha ao editar o registro na base de dados. Mensagem: ${error}`,
+          'Erro'
+        );
+      }
+    );
+  }
+
+  uploadAndAdjustFileName() {
+    if (
+      this.registerForm.get('imagemUrl').value !== '' &&
+      this.registerForm.get('imagemUrl').value !== 'assets/img/upload.png'
+    ) {
+      this.eventoService
+        .postUpload(this.file, this.fileNameToUpload)
+        .subscribe(() => {
+          this.dataImagem = new Date().getMilliseconds().toString();
+          this.imagemUrl = `http://localhost:5000/Resources/Images/${this.evento.imagemUrl}?dtimg=${this.dataImagem}`;
+        });
+    }
   }
 }

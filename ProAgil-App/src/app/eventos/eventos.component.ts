@@ -179,7 +179,8 @@ export class EventosComponent implements OnInit {
   }
 
   getEventos() {
-    this.eventoService.getEvento().subscribe(
+    this.dataImagem = new Date().getMilliseconds().toString();
+    this.eventoService.getEventos().subscribe(
       (eventosParam: Evento[]) => {
         this.eventos = eventosParam;
         this.eventosFiltrados = this.eventos;
