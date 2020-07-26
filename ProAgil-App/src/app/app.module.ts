@@ -8,6 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxMaskModule, IConfig } from 'ngx-mask';
 import { CommonModule } from '@angular/common';
 import { ToastrModule } from 'ngx-toastr';
+import { NgxCurrencyModule } from 'ngx-currency';
 
 // imports bootsrap agular modules
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -55,6 +56,7 @@ import { EventoEditComponent } from './eventos/eventoEdit/eventoEdit.component';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    NgxCurrencyModule,
     FormsModule,
     BsDropdownModule.forRoot(),
     TooltipModule.forRoot(),

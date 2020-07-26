@@ -131,7 +131,8 @@ namespace ProAgil.WebApi.Controllers
             {
                 Console.WriteLine("Processando atualização de evento");
                 var evento = await _repo.GetEventoByIdAsync(id, false);
-                if (evento == null) return NotFound();
+                if (evento == null)
+                    return NotFound();
 
                 var idLotes = new List<int>();
                 var idRedesSociais = new List<int>();
@@ -147,8 +148,10 @@ namespace ProAgil.WebApi.Controllers
                     rede => !idLotes.Contains(rede.Id)
                 ).ToArray();
 
-                if (lotes.Length > 0) _repo.DeleteRange(lotes);
-                if (redesSociais.Length > 0) _repo.DeleteRange(redesSociais);
+                if (lotes.Length > 0)
+                    _repo.DeleteRange(lotes);
+                if (redesSociais.Length > 0)
+                    _repo.DeleteRange(redesSociais);
 
                 _map.Map(model, evento);
 

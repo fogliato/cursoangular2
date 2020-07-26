@@ -48,6 +48,8 @@ export class EventoEditComponent implements OnInit {
   }
 
   carregarEvento() {
+    this.removerLote(0);
+    this.removerRedeSocial(0);
     const idEvento = +this.activeRoute.snapshot.paramMap.get('id');
     this.eventoService.getEventoById(idEvento).subscribe(
       (eventoResult: Evento) => {

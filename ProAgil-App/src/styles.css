@@ -9,3 +9,6 @@
 .cursor-pointer {
   cursor: pointer;
 }
+.captalize {
+  text-transform: capitalize;
+}

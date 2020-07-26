@@ -40,12 +40,14 @@
             <li class="nav-item dropdown"
                 dropdown>
                 <a dropdownToggle
-                   class="nav-link dropdown-toggle cursor-pointer "
+                   class="nav-link dropdown-toggle cursor-pointer captalize"
                    id="navbarDropdownMenuLink"
                    data-toggle="dropdown"
                    aria-haspopup="true"
-                   aria-expanded="false">
-                    {{authService.decodedToken?.unique_name}}
+                   aria-expanded="false"
+                   
+                   >
+                    {{getUserName()}}
                 </a>
                 <div *dropdownMenu
                      class="dropdown-menu"

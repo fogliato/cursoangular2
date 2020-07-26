@@ -24,4 +24,8 @@ export class NavComponent implements OnInit {
   entrar() {
     this.router.navigate(['/user/login']);
   }
+
+  getUserName(){
+    return sessionStorage.getItem('username');
+  }
 }
