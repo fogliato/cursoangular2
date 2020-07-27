@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./nav.component.css'],
 })
 export class NavComponent implements OnInit {
+  isLoginPage = false;
   constructor(public authService: AuthService, public router: Router) {}
 
   ngOnInit(): void {}
@@ -25,7 +26,7 @@ export class NavComponent implements OnInit {
     this.router.navigate(['/user/login']);
   }
 
-  getUserName(){
+  getUserName() {
     return sessionStorage.getItem('username');
   }
 }
