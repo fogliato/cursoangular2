@@ -50,7 +50,7 @@ import { EventoEditComponent } from './eventos/eventoEdit/eventoEdit.component';
     UserComponent,
     LoginComponent,
     RegistrationComponent,
-    EventoEditComponent
+    EventoEditComponent,
   ],
   imports: [
     BrowserModule,
@@ -71,7 +71,7 @@ import { EventoEditComponent } from './eventos/eventoEdit/eventoEdit.component';
       preventDuplicates: true,
       progressBar: true,
     }),
-    TabsModule.forRoot()
+    TabsModule.forRoot(),
   ],
   providers: [
     EventoService,

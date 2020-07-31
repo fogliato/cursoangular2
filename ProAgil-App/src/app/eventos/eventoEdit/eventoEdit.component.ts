@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr';
 import { DatePipe } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Evento } from 'src/app/models/Evento';
+import { Lote } from 'src/app/models/Lote';
 
 @Component({
   selector: 'app-eventoedit',
@@ -101,8 +102,8 @@ export class EventoEditComponent implements OnInit {
       nome: [lote.nome, Validators.required],
       quantidade: [lote.quantidade, Validators.required],
       preco: [lote.preco, Validators.required],
-      dataInicio: [lote.dataInicio],
-      dataFim: [lote.dataFim],
+      dataInicio: [this.datepipe.transform(lote.dataInicio, 'yyyy-MM-dd')],
+      dataFim: [this.datepipe.transform(lote.dataFim, 'yyyy-MM-dd')],
     });
   }
 
@@ -144,7 +145,6 @@ export class EventoEditComponent implements OnInit {
     this.evento.imagemUrl = this.fileNameToUpload;
     this.uploadAndAdjustFileName();
 
-    console.log(this.evento);
     this.eventoService.putEvento(this.evento).subscribe(
       (novo: Evento) => {
         this.toastr.success('Alterações salvas com sucesso', 'Sucesso!');

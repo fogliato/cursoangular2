@@ -112,6 +112,7 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
+                Console.WriteLine($"Registrando o evento {model.Tema} para a data e hora {model.DataEvento}");
                 var domain = _map.Map<Evento>(model);
                 _repo.Add(domain);
                 if (await _repo.SaveChangesAsync())
@@ -154,7 +155,7 @@ namespace ProAgil.WebApi.Controllers
                     _repo.DeleteRange(redesSociais);
 
                 _map.Map(model, evento);
-
+                Console.WriteLine($"Registrando o evento {model.Tema} para a data e hora {model.DataEvento}");
                 _repo.Update(evento);
 
                 if (await _repo.SaveChangesAsync())
