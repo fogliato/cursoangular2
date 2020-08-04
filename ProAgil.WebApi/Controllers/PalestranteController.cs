@@ -12,7 +12,7 @@ namespace ProAgil.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PalestranteController: ControllerBase
+    public class PalestranteController : ControllerBase
     {
         private readonly IProAgilRepository _repo;
         private readonly IMapper _map;
@@ -21,6 +21,21 @@ namespace ProAgil.WebApi.Controllers
         {
             _repo = repo;
             _map = map;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                var domainResult = await _repo.GetAllPalestrantesAsync(true);
+                var results = _map.Map<IEnumerable<PalestranteDto>>(domainResult);
+                return Ok(results);
+            }
+            catch (Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha na conexão com o banco de dados");
+            }
         }
 
         [HttpGet("{id}")]
@@ -87,13 +102,13 @@ namespace ProAgil.WebApi.Controllers
             return BadRequest();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
                 var palestrante = await _repo.GetPalestranteByIdAsync(id, false);
-                if ( palestrante == null)
+                if (palestrante == null)
                     return NotFound();
                 _repo.Delete(palestrante);
                 if (await _repo.SaveChangesAsync())

@@ -112,5 +112,15 @@ namespace ProAgil.Repository
         {
             _context.RemoveRange(entityArray);
         }
+
+        public async Task<Palestrante[]> GetAllPalestrantesAsync(bool includeEvento)
+        {
+            IQueryable<Palestrante> query = _context.Palestrante
+                .Include(p => p.RedesSociais);
+            if (includeEvento)
+                query.Include(p => p.PalestrantesEventos).ThenInclude(p => p.Evento);
+            
+            return await query.ToArrayAsync();
+        }
     }
 }

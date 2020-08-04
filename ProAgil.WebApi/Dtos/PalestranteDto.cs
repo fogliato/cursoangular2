@@ -12,7 +12,7 @@ namespace ProAgil.WebApi.Dtos
         
         public string MiniCurriculo { get; set; }
         
-        public string ImagemURL { get; set; }
+        public string ImagemUrl { get; set; }
         
         [Phone]
         public string Telefone { get; set; }
