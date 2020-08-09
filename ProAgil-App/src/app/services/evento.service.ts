@@ -32,6 +32,11 @@ export class EventoService {
     return this.http.put(`${this.baseURL}/${evento.id}`, evento);
   }
 
+  putEventoSimples(evento: Evento) {
+    console.log(evento);
+    return this.http.put(`${this.baseURL}/atualizacaoSimples/${evento.id}`, evento);
+  }
+
   deleteEvento(id: number) {
     return this.http.delete(`${this.baseURL}/${id}`);
   }

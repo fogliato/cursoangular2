@@ -119,7 +119,7 @@ export class EventosComponent implements OnInit {
           this.registerForm.value
         );
         this.uploadAndAdjustFileName();
-        this.eventoService.putEvento(this.evento).subscribe(
+        this.eventoService.putEventoSimples(this.evento).subscribe(
           (novo: Evento) => {
             template.hide();
             this.getEventos();

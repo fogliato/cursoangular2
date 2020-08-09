@@ -138,21 +138,50 @@ namespace ProAgil.WebApi.Controllers
                 var idLotes = new List<int>();
                 var idRedesSociais = new List<int>();
 
-                model.Lotes.ForEach(item => idLotes.Add(item.Id));
-                model.RedesSociais.ForEach(item => idRedesSociais.Add(item.Id));
-
+                if (model.Lotes != null)
+                    model.Lotes.ForEach(item => idLotes.Add(item.Id));
                 var lotes = evento.Lotes.Where(
                     lote => !idLotes.Contains(lote.Id)
                 ).ToArray();
 
+                if (lotes.Length > 0)
+                    _repo.DeleteRange(lotes);
+
+                if (model.RedesSociais != null)
+                    model.RedesSociais.ForEach(item => idRedesSociais.Add(item.Id));
                 var redesSociais = evento.RedesSociais.Where(
                     rede => !idLotes.Contains(rede.Id)
                 ).ToArray();
 
-                if (lotes.Length > 0)
-                    _repo.DeleteRange(lotes);
                 if (redesSociais.Length > 0)
                     _repo.DeleteRange(redesSociais);
+
+                _map.Map(model, evento);
+                Console.WriteLine($"Registrando o evento {model.Tema} para a data e hora {model.DataEvento}");
+                _repo.Update(evento);
+
+                if (await _repo.SaveChangesAsync())
+                {
+                    return Created($"/api/evento/{model.Id}", _map.Map<EventoDto>(evento));
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco Dados Falhou " + ex.Message);
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPut("atualizacaoSimples/{id}")]
+        public async Task<IActionResult> AtualizacaoSimples(int id, EventoDto model)
+        {
+            try
+            {
+                Console.WriteLine("Processando atualização de evento");
+                var evento = await _repo.GetEventoByIdAsync(id, false);
+                if (evento == null)
+                    return NotFound();
 
                 _map.Map(model, evento);
                 Console.WriteLine($"Registrando o evento {model.Tema} para a data e hora {model.DataEvento}");
