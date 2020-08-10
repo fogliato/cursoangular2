@@ -1,2 +1,49 @@
 <app-titulo [title]='title'></app-titulo>
-<p>contatos works!</p>
+<form [formGroup]="registerForm">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>Tema</label>
+            <input type="text"
+                   [ngClass]="{'is-invalid': registerForm.get('nomeCompleto').errors && registerForm.get('nomeCompleto').touched}"
+                   class="form-control"
+                   formControlName="nomeCompleto"
+                   placeholder="Insira o nome completo">
+            <div *ngIf="registerForm.get('nomeCompleto').hasError('required') && registerForm.get('nomeCompleto').touched"
+                 class="invalid-feedback">Nome completo é obrigatório</div>
+            <div *ngIf="registerForm.get('nomeCompleto').hasError('minlength') && registerForm.get('nomeCompleto').touched"
+                 class="invalid-feedback">Nome completo deve ter no mínimo 4 caracteres</div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>E-mail</label>
+            <input type="email"
+                   [ngClass]="{'is-invalid': registerForm.get('email').errors && registerForm.get('email').touched}"
+                   class="form-control"
+                   formControlName="email"
+                   placeholder="email@dominio.com.br">
+            <div *ngIf="registerForm.get('email').hasError('required') && registerForm.get('email').touched"
+                 class="invalid-feedback">E-mail é obrigatório</div>
+            <div *ngIf="registerForm.get('email').hasError('email') && registerForm.get('email').touched"
+                 class="invalid-feedback">Insira um e-mail válido</div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-8">
+            <label>Mensagem</label>
+            <input type="text"
+                   [ngClass]="{'is-invalid': registerForm.get('mensagem').errors && registerForm.get('mensagem').touched}"
+                   class="form-control"
+                   formControlName="mensagem">
+            <div *ngIf="registerForm.get('mensagem').hasError('required') && registerForm.get('mensagem').touched"
+                 class="invalid-feedback">Mensagem é obrigatório</div>
+        </div>
+    </div>
+</form>
+<div class="modal-footer">
+    <button class="btn btn-primary ml-auto"
+            [disabled]="!registerForm.valid"
+            (click)="executarContato()">
+        Salvar Alterações
+    </button>
+</div>
