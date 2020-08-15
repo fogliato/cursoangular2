@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class PalestranteService {
   baseURL = 'http://localhost:5000/api/palestrante';
-  baseUploadURL = 'http://localhost:5000/api/evento';
+  baseUploadURL = 'http://localhost:5000/api/palestrante';
 
   constructor(private http: HttpClient) {}
 
@@ -24,13 +24,13 @@ export class PalestranteService {
     return this.http.get<Palestrante>(`${this.baseURL}/${id}`);
   }
 
-  postPalestrante(evento: Palestrante) {
-    return this.http.post(this.baseURL, evento);
+  postPalestrante(palestrante: Palestrante) {
+    return this.http.post(this.baseURL, palestrante);
   }
 
-  putPalestrante(evento: Palestrante) {
-    console.log(evento);
-    return this.http.put(`${this.baseURL}/${evento.id}`, evento);
+  putPalestrante(palestrante: Palestrante) {
+    console.log(palestrante);
+    return this.http.put(`${this.baseURL}/${palestrante.id}`, palestrante);
   }
 
   deletePalestrante(id: number) {

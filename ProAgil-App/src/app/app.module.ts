@@ -9,6 +9,7 @@ import { NgxMaskModule, IConfig } from 'ngx-mask';
 import { CommonModule } from '@angular/common';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxCurrencyModule } from 'ngx-currency';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
 // imports bootsrap agular modules
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
@@ -57,6 +58,7 @@ import { EventoEditComponent } from './eventos/eventoEdit/eventoEdit.component';
     AppRoutingModule,
     HttpClientModule,
     NgxCurrencyModule,
+    CKEditorModule,
     FormsModule,
     BsDropdownModule.forRoot(),
     TooltipModule.forRoot(),
