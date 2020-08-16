@@ -6,7 +6,9 @@ import { BsLocaleService } from 'ngx-bootstrap/datepicker';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { PalestranteService } from '../services/palestrante.service';
-
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { ChangeEvent } from '@ckeditor/ckeditor5-angular';
+const Editor = ClassicEditor.Editor;
 @Component({
   selector: 'app-palestrantes',
   templateUrl: './palestrantes.component.html',
@@ -28,6 +30,7 @@ export class PalestrantesComponent implements OnInit {
   file: File;
   fileNameToUpload: string;
   dataImagem: string;
+  public miniCurriculoEditor = ClassicEditor;
 
   constructor(
     private palestranteService: PalestranteService,
@@ -77,11 +80,15 @@ export class PalestrantesComponent implements OnInit {
   validation() {
     this.registerForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(4)]],
-      miniCurriculo: ['', [Validators.required, Validators.minLength(2)]],
       imagemUrl: ['', Validators.required],
       telefone: ['', Validators.required],
+      miniCurriculo: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
     });
+  }
+
+  cancelar(template: any) {
+    template.hide();
   }
 
   salvarAlteracao(template: any) {
@@ -127,6 +134,8 @@ export class PalestrantesComponent implements OnInit {
           }
         );
       }
+    } else {
+      this.toastr.error(`Preencha o formulário corretamente.`, 'Erro');
     }
   }
 

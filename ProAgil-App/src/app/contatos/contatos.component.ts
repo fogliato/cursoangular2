@@ -34,7 +34,6 @@ export class ContatosComponent implements OnInit {
     if (this.registerForm.valid && this.conteudoMensagem !== '') {
       this.contato = Object.assign({}, this.registerForm.value);
       this.contato.mensagem = this.conteudoMensagem;
-      console.log(this.contato);
       this.contatoService.postContato(this.contato).subscribe(
         (novo: Contato) => {
           this.toastr.success('Contato realizado com sucesso', 'Sucesso');

@@ -113,29 +113,14 @@
                     <div class="form-row">
                         <div class="form-group col-md-8">
                             <label>Curriculo Resumido</label>
-                            <input type="text"
-                                   [ngClass]="{'is-invalid': registerForm.get('miniCurriculo').errors && registerForm.get('miniCurriculo').touched}"
-                                   class="form-control"
-                                   formControlName="miniCurriculo">
+                            <ckeditor [editor]="miniCurriculoEditor" formControlName="miniCurriculo" ></ckeditor>
                             <div *ngIf="registerForm.get('miniCurriculo').hasError('required') && registerForm.get('miniCurriculo').touched"
-                                 class="invalid-feedback">Local é obrigatório</div>
+                                 class="invalid-feedback">O mini curriculo é obrigatório</div>
                         </div>
-                        <div class="form-group col-md-4">
-                            <label>Telefone</label>
-                            <input type="text"
-                                   [ngClass]="{'is-invalid': registerForm.get('telefone').errors && registerForm.get('telefone').touched}"
-                                   class="form-control"
-                                   formControlName="telefone"
-                                   placeholder="Insira o telefone">
-                            <div *ngIf="registerForm.get('telefone').hasError('required')
-                  && registerForm.get('telefone').touched"
-                                 class="invalid-feedback">
-                                Telefone é obrigatório.
-                            </div>
-                        </div>
+
                     </div>
                     <div class="form-row">
-                        <div class="form-group col-md-3">
+                        <div class="form-group col-md-5">
                             <label>E-mail</label>
                             <input type="text"
                                    [ngClass]="{'is-invalid': registerForm.get('email').errors && registerForm.get('email').touched}"
@@ -146,7 +131,19 @@
                             <div *ngIf="registerForm.get('email').hasError('email') && registerForm.get('email').touched"
                                  class="invalid-feedback">Insira um e-mail válido</div>
                         </div>
-                        <div class="form-group col-md-9">
+                        <div class="form-group col-md-3">
+                            <label>Telefone</label>
+                            <input type="text"
+                                   [ngClass]="{'is-invalid': registerForm.get('telefone').errors && registerForm.get('telefone').touched}"
+                                   class="form-control"
+                                   formControlName="telefone"
+                                   placeholder="Insira o telefone">
+                            <div *ngIf="registerForm.get('telefone').hasError('required') && registerForm.get('telefone').touched"
+                                 class="invalid-feedback">
+                                Telefone é obrigatório.
+                            </div>
+                        </div>
+                        <div class="form-group col-md-2">
                             <label>Imagem</label>
                             <div>
                                 <button class="btn btn-success"
@@ -167,7 +164,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary"
-                        (click)="template.hide()">
+                        (click)="cancelar(template)">
                     Cancelar
                 </button>
                 <button class="btn btn-primary ml-auto"
