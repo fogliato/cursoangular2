@@ -113,9 +113,34 @@
                     <div class="form-row">
                         <div class="form-group col-md-8">
                             <label>Curriculo Resumido</label>
-                            <ckeditor [editor]="miniCurriculoEditor" formControlName="miniCurriculo" ></ckeditor>
+                            <ckeditor [editor]="miniCurriculoEditor"
+                                      formControlName="miniCurriculo"></ckeditor>
                             <div *ngIf="registerForm.get('miniCurriculo').hasError('required') && registerForm.get('miniCurriculo').touched"
                                  class="invalid-feedback">O mini curriculo é obrigatório</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-row">
+                                <div class="form-group col-md-9">
+                                    <input type="file"
+                                           formControlName="imagemUrl"
+                                           #file
+                                           (change)="onFileChange($event.target.files)"
+                                           class="form-control is-invalid"
+                                           placeholder=""
+                                           style="display: none">
+                                </div>
+                            </div>
+                            <div class="card profile-card-2">
+                                <div class="card-img-block">
+                                    <img [src]="imagemUrl"
+                                         class="img-fluid"
+                                         (click)="file.click()"
+                                         style="cursor: pointer; width: 350px;"
+                                         alt="Card image cap" />
+                                </div>
+                                <div *ngIf="registerForm.get('imagemUrl').hasError('required') && registerForm.get('imagemUrl').touched"
+                                     class="invalid-feedback">Imagem é obrigatório</div>
+                            </div>
                         </div>
 
                     </div>
@@ -134,6 +159,7 @@
                         <div class="form-group col-md-3">
                             <label>Telefone</label>
                             <input type="text"
+                                   mask="(000) 0000-0000"
                                    [ngClass]="{'is-invalid': registerForm.get('telefone').errors && registerForm.get('telefone').touched}"
                                    class="form-control"
                                    formControlName="telefone"
@@ -141,21 +167,6 @@
                             <div *ngIf="registerForm.get('telefone').hasError('required') && registerForm.get('telefone').touched"
                                  class="invalid-feedback">
                                 Telefone é obrigatório.
-                            </div>
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label>Imagem</label>
-                            <div>
-                                <button class="btn btn-success"
-                                        (click)="file.click()">Enviar Imagem</button>
-                                <input type="file"
-                                       #file
-                                       [ngClass]="{'is-invalid': registerForm.get('imagemUrl').errors && registerForm.get('imagemUrl').touched}"
-                                       (change)="onFileChange($event)"
-                                       class="form-control is-invalid d-none"
-                                       formControlName="imagemUrl">
-                                <div *ngIf="registerForm.get('imagemUrl').hasError('required') && registerForm.get('imagemUrl').touched"
-                                     class="invalid-feedback">Imagem é obrigatório</div>
                             </div>
                         </div>
                     </div>

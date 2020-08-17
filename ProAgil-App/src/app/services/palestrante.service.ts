@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class PalestranteService {
   baseURL = 'http://localhost:5000/api/palestrante';
-  baseUploadURL = 'http://localhost:5000/api/palestrante';
+  baseUploadURL = 'http://localhost:5000/api/evento';
 
   constructor(private http: HttpClient) {}
 

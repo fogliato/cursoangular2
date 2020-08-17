@@ -107,6 +107,7 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
+                Console.WriteLine($"Preparando a exclusão do palestrante de id {id}");
                 var palestrante = await _repo.GetPalestranteByIdAsync(id, false);
                 if (palestrante == null)
                     return NotFound();

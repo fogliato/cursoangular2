@@ -90,11 +90,10 @@ namespace ProAgil.Repository
         //PALESTRANTES
         public async Task<Palestrante> GetPalestranteByIdAsync(int id, bool includeEvento = false)
         {
-            IQueryable<Palestrante> query = _context.Palestrante
+            IQueryable<Palestrante> query = _context.Palestrante.Where(p => p.Id == id)
                 .Include(p => p.RedesSociais);
             if (includeEvento)
                 query.Include(p => p.PalestrantesEventos).ThenInclude(p => p.Evento);
-            query.Where(p => p.Id == id);
             return await query.FirstOrDefaultAsync();
         }
 

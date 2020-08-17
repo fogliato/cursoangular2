@@ -7,7 +7,6 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import { PalestranteService } from '../services/palestrante.service';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-import { ChangeEvent } from '@ckeditor/ckeditor5-angular';
 const Editor = ClassicEditor.Editor;
 @Component({
   selector: 'app-palestrantes',
@@ -25,6 +24,7 @@ export class PalestrantesComponent implements OnInit {
   editMode = false;
   filtroList: string;
   bodyDeletarPalestrante: string;
+  imagemUrl = 'assets/img/upload.png';
   modalRef: BsModalRef;
   registerForm: FormGroup;
   file: File;
@@ -140,21 +140,15 @@ export class PalestrantesComponent implements OnInit {
   }
 
   private uploadAndAdjustFileName() {
-    const nomeArquivo = this.palestrante.imagemUrl.split('\\', 3);
-    this.palestrante.imagemUrl = nomeArquivo[2];
-    this.dataImagem = new Date().getMilliseconds().toString();
-    if (this.editMode) {
-      this.palestrante.imagemUrl = this.fileNameToUpload;
+    if (
+      this.registerForm.get('imagemUrl').value !== '' &&
+      this.registerForm.get('imagemUrl').value !== 'assets/img/upload.png'
+    ) {
       this.palestranteService
         .postUpload(this.file, this.fileNameToUpload)
         .subscribe(() => {
-          this.getPalestrantes();
-        });
-    } else {
-      this.palestranteService
-        .postUpload(this.file, this.palestrante.imagemUrl)
-        .subscribe(() => {
-          this.getPalestrantes();
+          this.dataImagem = new Date().getMilliseconds().toString();
+          this.imagemUrl = `http://localhost:5000/Resources/Images/${this.palestrante.imagemUrl}?dtimg=${this.dataImagem}`;
         });
     }
   }
@@ -200,11 +194,10 @@ export class PalestrantesComponent implements OnInit {
     );
   }
 
-  onFileChange(event) {
+  onFileChange(file: FileList) {
     const reader = new FileReader();
-    if (event.target.files && event.target.files.length) {
-      this.file = event.target.files;
-    }
+    reader.onload = (event: any) => (this.imagemUrl = event.target.result);
+    reader.readAsDataURL(file[0]);
   }
 
   loadForm(model: Palestrante, template: any) {
