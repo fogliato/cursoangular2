@@ -249,7 +249,7 @@
           <input type="file"
                  formControlName="imagemUrl"
                  #file
-                 (change)="onFileChange($event.target.files)"
+                 (change)="onFileChange($event, $event.target.files)"
                  class="form-control is-invalid"
                  placeholder=""
                  style="display: none">

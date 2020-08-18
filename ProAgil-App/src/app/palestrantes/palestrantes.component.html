@@ -56,7 +56,7 @@
                     </button>
                     <button class="btn btn-sm btn-warning"
                             tooltip="editar detalhado"
-                            (click)="editarDetalhado(palestrante)">
+                            (click)="loadForm(palestrante, template)">
                         <i class="fa fa-edit"></i>
                     </button>
                 </div>
@@ -124,7 +124,7 @@
                                     <input type="file"
                                            formControlName="imagemUrl"
                                            #file
-                                           (change)="onFileChange($event.target.files)"
+                                           (change)="onFileChange($event, $event.target.files)"
                                            class="form-control is-invalid"
                                            placeholder=""
                                            style="display: none">

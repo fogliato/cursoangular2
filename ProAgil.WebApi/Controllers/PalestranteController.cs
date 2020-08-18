@@ -84,11 +84,12 @@ namespace ProAgil.WebApi.Controllers
             return BadRequest();
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, Palestrante model)
         {
             try
             {
+                Console.WriteLine($"Atualizando o palestrante {model.Nome}");
                 if (await _repo.GetPalestranteByIdAsync(id, false) == null)
                     return NotFound();
                 _repo.Update(model);

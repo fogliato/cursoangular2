@@ -144,6 +144,11 @@ export class PalestrantesComponent implements OnInit {
       this.registerForm.get('imagemUrl').value !== '' &&
       this.registerForm.get('imagemUrl').value !== 'assets/img/upload.png'
     ) {
+      const nomeArquivo = this.palestrante.imagemUrl.split('\\', 3);
+      this.palestrante.imagemUrl = nomeArquivo[2];
+      if (!this.editMode) {
+        this.fileNameToUpload = this.palestrante.imagemUrl;
+      }
       this.palestranteService
         .postUpload(this.file, this.fileNameToUpload)
         .subscribe(() => {
@@ -194,9 +199,12 @@ export class PalestrantesComponent implements OnInit {
     );
   }
 
-  onFileChange(file: FileList) {
+  onFileChange(evento: any, file: FileList) {
     const reader = new FileReader();
+
     reader.onload = (event: any) => (this.imagemUrl = event.target.result);
+
+    this.file = evento.target.files;
     reader.readAsDataURL(file[0]);
   }
 
@@ -204,7 +212,12 @@ export class PalestrantesComponent implements OnInit {
     this.openModal(template);
     this.editMode = true;
     this.palestrante = Object.assign({}, model);
-    this.palestrante.imagemUrl = '';
+    if (this.palestrante.imagemUrl !== '') {
+      this.imagemUrl = `http://localhost:5000/Resources/Images/${this.palestrante.imagemUrl}?dtimg=${this.dataImagem}`;
+      this.palestrante.imagemUrl = '';
+    } else {
+      this.imagemUrl = 'assets/img/upload.png';
+    }
     this.fileNameToUpload = model.imagemUrl.toString();
     this.registerForm.patchValue(this.palestrante);
   }
