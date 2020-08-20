@@ -121,5 +121,18 @@ namespace ProAgil.Repository
             
             return await query.ToArrayAsync();
         }
+
+        public async Task<Evento[]> GetLatestEventos()
+        {
+            try
+            {
+                return await _context.Eventos.AsNoTracking().OrderByDescending(c => c.Id).Take(5).ToArrayAsync();
+                 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

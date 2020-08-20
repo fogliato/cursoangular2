@@ -19,6 +19,10 @@ export class EventoService {
     return this.http.get<Evento[]>(`${this.baseURL}/getbyTema/${tema}`);
   }
 
+  getLatestEventos(): Observable<Evento[]> {
+    return this.http.get<Evento[]>(`${this.baseURL}/getLatestEventos`);
+  }
+
   getEventoById(id: number): Observable<Evento> {
     return this.http.get<Evento>(`${this.baseURL}/${id}`);
   }
@@ -34,7 +38,10 @@ export class EventoService {
 
   putEventoSimples(evento: Evento) {
     console.log(evento);
-    return this.http.put(`${this.baseURL}/atualizacaoSimples/${evento.id}`, evento);
+    return this.http.put(
+      `${this.baseURL}/atualizacaoSimples/${evento.id}`,
+      evento
+    );
   }
 
   deleteEvento(id: number) {

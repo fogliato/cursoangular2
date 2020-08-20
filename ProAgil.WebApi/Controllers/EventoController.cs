@@ -107,6 +107,21 @@ namespace ProAgil.WebApi.Controllers
             }
         }
 
+        [HttpGet("getLatestEventos")]
+        public async Task<IActionResult> GetLatestEventos()
+        {
+            try
+            {
+                var domain = await _repo.GetLatestEventos();
+                var results = _map.Map<IEnumerable<EventoDto>>(domain);
+                return Ok(results);
+            }
+            catch (Exception)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha na conexão com o banco de dados");
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post(EventoDto model)
         {
