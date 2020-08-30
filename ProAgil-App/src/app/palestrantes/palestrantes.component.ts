@@ -30,7 +30,7 @@ export class PalestrantesComponent implements OnInit {
   file: File;
   fileNameToUpload: string;
   dataImagem: string;
-  public miniCurriculoEditor = ClassicEditor;
+  miniCurriculoEditor = ClassicEditor;
 
   constructor(
     private palestranteService: PalestranteService,
