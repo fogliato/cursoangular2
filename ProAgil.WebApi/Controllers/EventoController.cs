@@ -38,7 +38,10 @@ namespace ProAgil.WebApi.Controllers
             }
             catch (Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha na conexão com o banco de dados");
+                return this.StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Falha na conexão com o banco de dados"
+                );
             }
         }
 
@@ -56,10 +59,12 @@ namespace ProAgil.WebApi.Controllers
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 if (file.Length > 0)
                 {
-                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName;
+                    var fileName = ContentDispositionHeaderValue
+                        .Parse(file.ContentDisposition)
+                        .FileName;
                     //domain.ImagemUrl = fileName;
                     var fullPath = Path.Combine(pathToSave, fileName.Replace("\"", "").Trim());
-                    using(var stream = new FileStream(fullPath, FileMode.Create))
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
                     {
                         await file.CopyToAsync(stream);
                     }
@@ -74,7 +79,6 @@ namespace ProAgil.WebApi.Controllers
             {
                 return BadRequest("Erro ao tentar realizar upload");
             }
-
         }
 
         [HttpGet("{id}")]
@@ -88,7 +92,10 @@ namespace ProAgil.WebApi.Controllers
             }
             catch (Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha na conexão com o banco de dados");
+                return this.StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Falha na conexão com o banco de dados"
+                );
             }
         }
 
@@ -103,7 +110,10 @@ namespace ProAgil.WebApi.Controllers
             }
             catch (Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha na conexão com o banco de dados");
+                return this.StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Falha na conexão com o banco de dados"
+                );
             }
         }
 
@@ -118,7 +128,10 @@ namespace ProAgil.WebApi.Controllers
             }
             catch (Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha na conexão com o banco de dados");
+                return this.StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Falha na conexão com o banco de dados"
+                );
             }
         }
 
@@ -127,7 +140,9 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
-                Console.WriteLine($"Registrando o evento {model.Tema} para a data e hora {model.DataEvento}");
+                Console.WriteLine(
+                    $"Registrando o evento {model.Tema} para a data e hora {model.DataEvento}"
+                );
                 var domain = _map.Map<Evento>(model);
                 _repo.Add(domain);
                 if (await _repo.SaveChangesAsync())
@@ -135,7 +150,10 @@ namespace ProAgil.WebApi.Controllers
             }
             catch (Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha na conexão com o banco de dados");
+                return this.StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Falha na conexão com o banco de dados"
+                );
             }
             return BadRequest();
         }
@@ -155,24 +173,24 @@ namespace ProAgil.WebApi.Controllers
 
                 if (model.Lotes != null)
                     model.Lotes.ForEach(item => idLotes.Add(item.Id));
-                var lotes = evento.Lotes.Where(
-                    lote => !idLotes.Contains(lote.Id)
-                ).ToArray();
+                var lotes = evento.Lotes.Where(lote => !idLotes.Contains(lote.Id)).ToArray();
 
                 if (lotes.Length > 0)
                     _repo.DeleteRange(lotes);
 
                 if (model.RedesSociais != null)
                     model.RedesSociais.ForEach(item => idRedesSociais.Add(item.Id));
-                var redesSociais = evento.RedesSociais.Where(
-                    rede => !idLotes.Contains(rede.Id)
-                ).ToArray();
+                var redesSociais = evento
+                    .RedesSociais.Where(rede => !idLotes.Contains(rede.Id))
+                    .ToArray();
 
                 if (redesSociais.Length > 0)
                     _repo.DeleteRange(redesSociais);
 
                 _map.Map(model, evento);
-                Console.WriteLine($"Registrando o evento {model.Tema} para a data e hora {model.DataEvento}");
+                Console.WriteLine(
+                    $"Registrando o evento {model.Tema} para a data e hora {model.DataEvento}"
+                );
                 _repo.Update(evento);
 
                 if (await _repo.SaveChangesAsync())
@@ -182,7 +200,10 @@ namespace ProAgil.WebApi.Controllers
             }
             catch (System.Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco Dados Falhou " + ex.Message);
+                return this.StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Banco Dados Falhou " + ex.Message
+                );
             }
 
             return BadRequest();
@@ -199,7 +220,9 @@ namespace ProAgil.WebApi.Controllers
                     return NotFound();
 
                 _map.Map(model, evento);
-                Console.WriteLine($"Registrando o evento {model.Tema} para a data e hora {model.DataEvento}");
+                Console.WriteLine(
+                    $"Registrando o evento {model.Tema} para a data e hora {model.DataEvento}"
+                );
                 _repo.Update(evento);
 
                 if (await _repo.SaveChangesAsync())
@@ -209,7 +232,10 @@ namespace ProAgil.WebApi.Controllers
             }
             catch (System.Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Banco Dados Falhou " + ex.Message);
+                return this.StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Banco Dados Falhou " + ex.Message
+                );
             }
 
             return BadRequest();
@@ -223,7 +249,10 @@ namespace ProAgil.WebApi.Controllers
                 var evento = await _repo.GetEventoByIdAsync(id, false);
                 if (evento == null)
                     return NotFound();
-                else { Console.WriteLine($"Excluindo evento {id}"); }
+                else
+                {
+                    Console.WriteLine($"Excluindo evento {id}");
+                }
                 _repo.Delete(evento);
                 if (await _repo.SaveChangesAsync())
                 {
@@ -233,7 +262,10 @@ namespace ProAgil.WebApi.Controllers
             }
             catch (Exception)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, "Falha na conexão com o banco de dados");
+                return this.StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    "Falha na conexão com o banco de dados"
+                );
             }
             return BadRequest();
         }
