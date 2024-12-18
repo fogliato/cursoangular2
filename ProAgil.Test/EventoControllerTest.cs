@@ -51,5 +51,32 @@ namespace ProAgil.Test
             var returnValue = Assert.IsType<EventoDto[]>(okResult.Value);
             Assert.Empty(returnValue);
         }
+
+        [Fact]
+        public async Task GetLatestEventos_ReturnsOkResult_WithListOfEventos()
+        {
+            // Arrange
+            var eventos = new List<Evento>
+            {
+                new Evento { Id = 1, Tema = "Evento Recente" }
+            };
+            var eventoDtos = new List<EventoDto>
+            {
+                new EventoDto { Id = 1, Tema = "Evento Recente" }
+            };
+
+            _mockRepo.Setup(repo => repo.GetLatestEventos().Result);
+            _mockMapper
+                .Setup(mapper => mapper.Map<IEnumerable<EventoDto>>(eventos))
+                .Returns(eventoDtos);
+
+            // Act
+            var result = await _controller.GetLatestEventos();
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var returnValue = Assert.IsType<EventoDto[]>(okResult.Value);
+            Assert.Empty(returnValue);
+        }
     }
 }
