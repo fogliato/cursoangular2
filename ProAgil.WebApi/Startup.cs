@@ -85,6 +85,50 @@ namespace ProAgil.WebApi
             services.AddAutoMapper(typeof(Startup));
             services.AddCors();
             services.AddControllers();
+
+            // Adicionar a configuração do Swagger
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo 
+                { 
+                    Title = "ProAgil API", 
+                    Version = "v1",
+                    Description = "API do ProAgil - Gerenciamento de Eventos",
+                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                    {
+                        Name = "Seu Nome",
+                        Email = "seu.email@exemplo.com"
+                    }
+                });
+
+                // Configuração para o Swagger usar o token JWT
+                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header usando Bearer scheme. Exemplo: \"Bearer {token}\"",
+                    Name = "Authorization",
+                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                {
+                    {
+                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                        {
+                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                            {
+                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = Microsoft.OpenApi.Models.ParameterLocation.Header
+                        },
+                        new List<string>()
+                    }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -108,6 +152,13 @@ namespace ProAgil.WebApi
             });
             app.UseRouting();
             app.UseAuthorization();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProAgil API V1");
+                c.RoutePrefix = "swagger";
+            });
 
             app.UseEndpoints(endpoints =>
             {
