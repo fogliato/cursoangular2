@@ -73,15 +73,20 @@ namespace ProAgil.WebApi.Controllers
             try
             {
                 var user = await _userManager.FindByNameAsync(dtoLogin.UserName);
+                if (user == null)
+                    return Unauthorized();
+                    
                 var result = await _signManager.CheckPasswordSignInAsync(user, dtoLogin.Password, true);
                 if (result.Succeeded)
                 {
                     var appUser = await _userManager.Users.FirstOrDefaultAsync(u => u.NormalizedUserName == dtoLogin.UserName.ToUpper());
-                    //var userToReturn = _mapper.Map<UserLoginDto>(appUser);
+                    if (appUser == null)
+                        return Unauthorized();
+                        
                     return Ok(new
                     {
-                        token = GenerateJWT(appUser).Result,
-                            user = dtoLogin
+                        token = await GenerateJWT(appUser),
+                        user = dtoLogin
                     });
                 }
                 return Unauthorized();
@@ -98,7 +103,7 @@ namespace ProAgil.WebApi.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, appUser.Id.ToString()),
-                new Claim(ClaimTypes.Name, appUser.UserName)
+                new Claim(ClaimTypes.Name, appUser.UserName ?? string.Empty)
             };
             var roles = await _userManager.GetRolesAsync(appUser);
 
@@ -107,7 +112,9 @@ namespace ProAgil.WebApi.Controllers
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config.GetSection("AppSettings:Token").Value));
+            var tokenValue = _config.GetSection("AppSettings:Token").Value 
+                ?? throw new InvalidOperationException("Token configuration is missing");
+            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenValue));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 

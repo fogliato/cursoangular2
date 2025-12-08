@@ -10,30 +10,30 @@ namespace ProAgil.WebApi.Dtos
 
         [Required]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "O local deve ter no minimo 2 e no máximo 100 caracteres e no mínimo")]
-        public string Local { get; set; }
+        public string Local { get; set; } = null!;
 
         [Required]
         public DateTime DataEvento { get; set; }
 
         [Required]
-        public string Tema { get; set; }
+        public string Tema { get; set; } = null!;
 
         [Required]
         [Range(2, 50000, ErrorMessage = "A quantidade de pessoas deve ser entre 2 e 50 000")]
         public int QtdPessoas { get; set; }
 
-        public string ImagemUrl { get; set; }
+        public string? ImagemUrl { get; set; }
 
         [Phone]
-        public string Telefone { get; set; }
+        public string? Telefone { get; set; }
 
         [EmailAddress(ErrorMessage = "Informe um e-mail válido")]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
-        public List<LoteDto> Lotes { get; set; }
+        public List<LoteDto> Lotes { get; set; } = new List<LoteDto>();
 
-        public List<RedeSocialDto> RedesSociais { get; set; }
+        public List<RedeSocialDto> RedesSociais { get; set; } = new List<RedeSocialDto>();
 
-        public List<PalestranteDto> Palestrantes { get; set; }
+        public List<PalestranteDto> Palestrantes { get; set; } = new List<PalestranteDto>();
     }
 }

@@ -8,20 +8,20 @@ namespace ProAgil.WebApi.Dtos
         public int Id { get; set; }
         
         [Required]
-        public string Nome { get; set; }
+        public string Nome { get; set; } = null!;
         
-        public string MiniCurriculo { get; set; }
+        public string? MiniCurriculo { get; set; }
         
-        public string ImagemUrl { get; set; }
+        public string? ImagemUrl { get; set; }
         
         [Phone]
-        public string Telefone { get; set; }
+        public string? Telefone { get; set; }
         
         [EmailAddress]
-        public string Email { get; set; }
+        public string? Email { get; set; }
         
-        public List<RedeSocialDto> RedesSociais { get; set; }
+        public List<RedeSocialDto> RedesSociais { get; set; } = new List<RedeSocialDto>();
         
-        public List<EventoDto> Eventos { get; set; }
+        public List<EventoDto> Eventos { get; set; } = new List<EventoDto>();
     }
 }

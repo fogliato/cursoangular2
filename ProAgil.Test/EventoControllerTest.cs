@@ -38,7 +38,7 @@ namespace ProAgil.Test
                 new EventoDto { Id = 1, Tema = "Evento Teste" }
             };
 
-            _mockRepo.Setup(repo => repo.GetAllEventoAsync(true).Result);
+            _mockRepo.Setup(repo => repo.GetAllEventoAsync(true)).ReturnsAsync(eventos.ToArray());
             _mockMapper
                 .Setup(mapper => mapper.Map<IEnumerable<EventoDto>>(eventos))
                 .Returns(eventoDtos);
@@ -65,7 +65,7 @@ namespace ProAgil.Test
                 new EventoDto { Id = 1, Tema = "Evento Recente" }
             };
 
-            _mockRepo.Setup(repo => repo.GetLatestEventos().Result);
+            _mockRepo.Setup(repo => repo.GetLatestEventos()).ReturnsAsync(eventos.ToArray());
             _mockMapper
                 .Setup(mapper => mapper.Map<IEnumerable<EventoDto>>(eventos))
                 .Returns(eventoDtos);

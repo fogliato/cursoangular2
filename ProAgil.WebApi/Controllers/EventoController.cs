@@ -63,7 +63,7 @@ namespace ProAgil.WebApi.Controllers
                         .Parse(file.ContentDisposition)
                         .FileName;
                     //domain.ImagemUrl = fileName;
-                    var fullPath = Path.Combine(pathToSave, fileName.Replace("\"", "").Trim());
+                    var fullPath = Path.Combine(pathToSave, fileName?.Replace("\"", "").Trim() ?? string.Empty);
                     using (var stream = new FileStream(fullPath, FileMode.Create))
                     {
                         await file.CopyToAsync(stream);

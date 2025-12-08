@@ -39,7 +39,8 @@ namespace ProAgil.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectStr = Configuration.GetConnectionString("DefaultConnection");
+            string connectStr = Configuration.GetConnectionString("DefaultConnection") 
+                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             services.AddDbContext<ProAgilContext>(x => x.UseSqlServer(connectStr));
 
             IdentityBuilder builder = services.AddIdentityCore<User>(options =>
@@ -69,13 +70,15 @@ namespace ProAgil.WebApi
             });
 
             //configurações para trabalhar com jwt
+            var tokenValue = Configuration.GetSection("AppSettings:Token").Value 
+                ?? throw new InvalidOperationException("Token configuration 'AppSettings:Token' not found.");
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenValue)),
                     ValidateIssuer = false,
                     ValidateAudience = false
                     };
