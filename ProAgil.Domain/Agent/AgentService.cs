@@ -9,6 +9,7 @@ namespace ProAgil.Domain.Agent
     {
         Task<object> ProcessMessage(string message);
     }
+
     /// <summary>
     /// Serviço principal que coordena o processamento de mensagens usando IA
     /// para identificar e executar ações em controllers

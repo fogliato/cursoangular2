@@ -39,8 +39,11 @@ namespace ProAgil.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectStr = Configuration.GetConnectionString("DefaultConnection") 
-                ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            string connectStr =
+                Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException(
+                    "Connection string 'DefaultConnection' not found."
+                );
             services.AddDbContext<ProAgilContext>(x => x.UseSqlServer(connectStr));
 
             IdentityBuilder builder = services.AddIdentityCore<User>(options =>
@@ -51,7 +54,6 @@ namespace ProAgil.WebApi
                 options.Password.RequireUppercase = false;
                 options.Password.RequiredLength = 4;
                 options.Lockout.MaxFailedAccessAttempts = 5;
-
             });
 
             //Configurações para trabalhar com Identity core
@@ -63,25 +65,30 @@ namespace ProAgil.WebApi
 
             services.AddMvc(options =>
             {
-                var policy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
+                var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
 
             //configurações para trabalhar com jwt
-            var tokenValue = Configuration.GetSection("AppSettings:Token").Value 
-                ?? throw new InvalidOperationException("Token configuration 'AppSettings:Token' not found.");
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            var tokenValue =
+                Configuration.GetSection("AppSettings:Token").Value
+                ?? throw new InvalidOperationException(
+                    "Token configuration 'AppSettings:Token' not found."
+                );
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                    {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenValue)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                    };
+                    options.TokenValidationParameters =
+                        new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                        {
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                                Encoding.ASCII.GetBytes(tokenValue)
+                            ),
+                            ValidateIssuer = false,
+                            ValidateAudience = false,
+                        };
                 });
 
             services.AddScoped<IProAgilRepository, ProAgilRepository>();
@@ -92,53 +99,60 @@ namespace ProAgil.WebApi
             // Adicionar a configuração do Swagger
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo 
-                { 
-                    Title = "ProAgil API", 
-                    Version = "v1",
-                    Description = "API do ProAgil - Gerenciamento de Eventos",
-                    Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                c.SwaggerDoc(
+                    "v1",
+                    new Microsoft.OpenApi.Models.OpenApiInfo
                     {
-                        Name = "Seu Nome",
-                        Email = "seu.email@exemplo.com"
+                        Title = "ProAgil API",
+                        Version = "v1",
+                        Description = "API do ProAgil - Gerenciamento de Eventos",
+                        Contact = new Microsoft.OpenApi.Models.OpenApiContact
+                        {
+                            Name = "Seu Nome",
+                            Email = "seu.email@exemplo.com",
+                        },
                     }
-                });
+                );
 
                 // Configuração para o Swagger usar o token JWT
-                c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-                {
-                    Description = "JWT Authorization header usando Bearer scheme. Exemplo: \"Bearer {token}\"",
-                    Name = "Authorization",
-                    In = Microsoft.OpenApi.Models.ParameterLocation.Header,
-                    Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer"
-                });
-
-                c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
-                {
+                c.AddSecurityDefinition(
+                    "Bearer",
+                    new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                     {
-                        new Microsoft.OpenApi.Models.OpenApiSecurityScheme
-                        {
-                            Reference = new Microsoft.OpenApi.Models.OpenApiReference
-                            {
-                                Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
-                                Id = "Bearer"
-                            },
-                            Scheme = "oauth2",
-                            Name = "Bearer",
-                            In = Microsoft.OpenApi.Models.ParameterLocation.Header
-                        },
-                        new List<string>()
+                        Description =
+                            "JWT Authorization header usando Bearer scheme. Exemplo: \"Bearer {token}\"",
+                        Name = "Authorization",
+                        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+                        Scheme = "Bearer",
                     }
-                });
+                );
+
+                c.AddSecurityRequirement(
+                    new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+                    {
+                        {
+                            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                            {
+                                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                                {
+                                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                                    Id = "Bearer",
+                                },
+                                Scheme = "oauth2",
+                                Name = "Bearer",
+                                In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+                            },
+                            new List<string>()
+                        },
+                    }
+                );
             });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
- 
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -148,11 +162,15 @@ namespace ProAgil.WebApi
             app.UseAuthentication();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseStaticFiles();
-            app.UseStaticFiles(new StaticFileOptions()
-            {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
-                    RequestPath = new PathString("/Resources")
-            });
+            app.UseStaticFiles(
+                new StaticFileOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(
+                        Path.Combine(Directory.GetCurrentDirectory(), @"Resources")
+                    ),
+                    RequestPath = new PathString("/Resources"),
+                }
+            );
             app.UseRouting();
             app.UseAuthorization();
 

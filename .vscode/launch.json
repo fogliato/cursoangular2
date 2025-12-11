@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/ProAgil.WebApi/bin/Debug/netcoreapp3.1/ProAgil.WebApi.dll",
+            "program": "${workspaceFolder}/ProAgil.WebApi/bin/Debug/net8.0/ProAgil.WebApi.dll",
             "args": [],
             "cwd": "${workspaceFolder}/ProAgil.WebApi",
             "stopAtEntry": false,
@@ -20,7 +20,8 @@
                 "pattern": "^\\s*Now listening on:\\s+(https?://\\S+)"
             },
             "env": {
-                "ASPNETCORE_ENVIRONMENT": "Development"
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "ASPNETCORE_URLS": "http://localhost:5050"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
