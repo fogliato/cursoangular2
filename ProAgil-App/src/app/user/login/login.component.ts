@@ -38,25 +38,15 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this.login = Object.assign(this.loginForm.value);
-    console.log(this.login);
+    console.log('Login attempt:', this.model);
     this.authService.login(this.model).subscribe(
       (jwt: any) => {
         this.toastr.success('Entrando no sistema', 'Sucesso!');
         this.router.navigate(['/dashboard']);
       },
       (error) => {
-        const erro = error.error;
-        erro.forEach((element) => {
-          switch (element.code) {
-            default:
-              this.toastr.error(
-                `Codigo do erro: ${element.code}`,
-                'Erro ao tentar logar no sistema'
-              );
-              break;
-          }
-        });
+        console.error('Login error:', error);
+        this.toastr.error('Usuário ou senha inválidos', 'Erro ao logar');
       }
     );
   }

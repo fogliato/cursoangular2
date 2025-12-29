@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class PalestranteService {
-  baseURL = 'http://localhost:5000/api/palestrante';
-  baseUploadURL = 'http://localhost:5000/api/evento';
+  baseURL = 'http://localhost:5050/api/palestrante';
+  baseUploadURL = 'http://localhost:5050/api/evento';
 
   constructor(private http: HttpClient) {}
 

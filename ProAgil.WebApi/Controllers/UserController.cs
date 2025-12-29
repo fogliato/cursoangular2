@@ -26,10 +26,12 @@ namespace ProAgil.WebApi.Controllers
         private readonly SignInManager<User> _signManager;
         private readonly IMapper _mapper;
 
-        public UserController(IConfiguration config,
+        public UserController(
+            IConfiguration config,
             UserManager<User> userManager,
             SignInManager<User> signManager,
-            IMapper mapper)
+            IMapper mapper
+        )
         {
             _config = config;
             _userManager = userManager;
@@ -62,7 +64,10 @@ namespace ProAgil.WebApi.Controllers
             }
             catch (System.Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Falha na conexão com o banco de dados: {ex.Message}");
+                return this.StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    $"Falha na conexão com o banco de dados: {ex.Message}"
+                );
             }
         }
 
@@ -75,26 +80,30 @@ namespace ProAgil.WebApi.Controllers
                 var user = await _userManager.FindByNameAsync(dtoLogin.UserName);
                 if (user == null)
                     return Unauthorized();
-                    
-                var result = await _signManager.CheckPasswordSignInAsync(user, dtoLogin.Password, true);
+
+                var result = await _signManager.CheckPasswordSignInAsync(
+                    user,
+                    dtoLogin.Password,
+                    true
+                );
                 if (result.Succeeded)
                 {
-                    var appUser = await _userManager.Users.FirstOrDefaultAsync(u => u.NormalizedUserName == dtoLogin.UserName.ToUpper());
+                    var appUser = await _userManager.Users.FirstOrDefaultAsync(u =>
+                        u.NormalizedUserName == dtoLogin.UserName.ToUpper()
+                    );
                     if (appUser == null)
                         return Unauthorized();
-                        
-                    return Ok(new
-                    {
-                        token = await GenerateJWT(appUser),
-                        user = dtoLogin
-                    });
+
+                    return Ok(new { token = await GenerateJWT(appUser), user = dtoLogin });
                 }
                 return Unauthorized();
-
             }
             catch (System.Exception ex)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Falha na conexão com o banco de dados: {ex.Message}");
+                return this.StatusCode(
+                    StatusCodes.Status500InternalServerError,
+                    $"Falha na conexão com o banco de dados: {ex.Message}"
+                );
             }
         }
 
@@ -103,7 +112,7 @@ namespace ProAgil.WebApi.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, appUser.Id.ToString()),
-                new Claim(ClaimTypes.Name, appUser.UserName ?? string.Empty)
+                new Claim(ClaimTypes.Name, appUser.UserName ?? string.Empty),
             };
             var roles = await _userManager.GetRolesAsync(appUser);
 
@@ -112,7 +121,8 @@ namespace ProAgil.WebApi.Controllers
                 claims.Add(new Claim(ClaimTypes.Role, role));
             }
 
-            var tokenValue = _config.GetSection("AppSettings:Token").Value 
+            var tokenValue =
+                _config.GetSection("AppSettings:Token").Value
                 ?? throw new InvalidOperationException("Token configuration is missing");
             var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenValue));
 
@@ -122,7 +132,7 @@ namespace ProAgil.WebApi.Controllers
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.Now.AddHours(8),
-                SigningCredentials = creds
+                SigningCredentials = creds,
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
