@@ -11,7 +11,7 @@ import { ToastrModule } from 'ngx-toastr';
 import { NgxCurrencyModule } from 'ngx-currency';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
-// imports bootsrap agular modules
+// imports bootstrap angular modules
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
@@ -21,37 +21,38 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 // components
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
-import { EventosComponent } from './eventos/eventos.component';
-import { PalestrantesComponent } from './palestrantes/palestrantes.component';
+import { EventsComponent } from './events/events.component';
+import { SpeakersComponent } from './speakers/speakers.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { ContatosComponent } from './contatos/contatos.component';
+import { ContactsComponent } from './contacts/contacts.component';
 import { TituloComponent } from './shared/titulo/titulo.component';
 import { UserComponent } from './user/user.component';
 import { LoginComponent } from './user/login/login.component';
 import { RegistrationComponent } from './user/registration/registration.component';
+
 // pipes
 import { DateTimeFormatPipePipe } from './helpers/DateTimeFormatPipe.pipe';
 import { DatePipe } from '@angular/common';
 
 // services
-import { EventoService } from './services/evento.service';
+import { EventService } from './services/event.service';
 import { AuthInterceptor } from './auth/auth.interceptor';
-import { EventoEditComponent } from './eventos/eventoEdit/eventoEdit.component';
+import { EventEditComponent } from './events/eventEdit/eventEdit.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TituloComponent,
-    EventosComponent,
+    EventsComponent,
     NavComponent,
-    PalestrantesComponent,
+    SpeakersComponent,
     DashboardComponent,
-    ContatosComponent,
+    ContactsComponent,
     DateTimeFormatPipePipe,
     UserComponent,
     LoginComponent,
     RegistrationComponent,
-    EventoEditComponent,
+    EventEditComponent,
   ],
   imports: [
     BrowserModule,
@@ -76,7 +77,7 @@ import { EventoEditComponent } from './eventos/eventoEdit/eventoEdit.component';
     TabsModule.forRoot(),
   ],
   providers: [
-    EventoService,
+    EventService,
     DatePipe,
     {
       provide: HTTP_INTERCEPTORS,

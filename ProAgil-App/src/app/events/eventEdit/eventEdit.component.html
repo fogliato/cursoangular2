@@ -1,0 +1,297 @@
+<app-titulo [title]='title'></app-titulo>
+<form [formGroup]="registerForm">
+  <div class="row">
+    <div class="col-md-8">
+      <tabset>
+        <tab heading="Event">
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label>Theme</label>
+              <input type="text"
+                     class="form-control"
+                     [(ngModel)]="event.theme"
+                     [ngClass]="{'is-invalid': registerForm.get('theme').errors && registerForm.get('theme').touched}"
+                     formControlName="theme"
+                     placeholder="Enter Theme">
+              <div *ngIf="registerForm.get('theme').hasError('required')
+              && registerForm.get('theme').touched"
+                   class="invalid-feedback">
+                Theme is required.
+              </div>
+              <div *ngIf="registerForm.get('theme').hasError('minlength')
+            && registerForm.get('theme').touched"
+                   class="invalid-feedback">
+                Theme must have at least 4 characters.
+              </div>
+              <div *ngIf="registerForm.get('theme').hasError('maxlength')
+          && registerForm.get('theme').touched"
+                   class="invalid-feedback">
+                Theme must have at most 50 characters.
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-8">
+              <label>Location</label>
+              <input type="text"
+                     class="form-control"
+                     [(ngModel)]="event.location"
+                     [ngClass]="{'is-invalid': registerForm.get('location').errors 
+              && registerForm.get('location').touched}"
+                     formControlName="location"
+                     placeholder="">
+              <div *ngIf="registerForm.get('location').hasError('required')
+              && registerForm.get('location').touched"
+                   class="invalid-feedback">
+                Location is required.
+              </div>
+            </div>
+            <div class="form-group col-md-4">
+              <label>Date and Time</label>
+              <input type="text"
+                     class="form-control"
+                     [(ngModel)]="event.eventDate"
+                     bsDatepicker
+                     value="{{eventDate | DateTimeFormatPipe}}"
+                     [(ngModel)]="eventDate"
+                     [bsConfig]="{ dateInputFormat : 'MM/DD/YYYY hh:mm' }"
+                     [ngClass]="{'is-invalid': registerForm.get('eventDate').errors 
+            && registerForm.get('eventDate').touched}"
+                     formControlName="eventDate"
+                     placeholder="">
+              <div *ngIf="registerForm.get('eventDate').hasError('required')
+            && registerForm.get('eventDate').touched"
+                   class="invalid-feedback">
+                Date and time is required.
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-2">
+              <label>People Count</label>
+              <input type="text"
+                     [(ngModel)]="event.peopleCount"
+                     [ngClass]="{'is-invalid': registerForm.get('peopleCount').errors 
+              && registerForm.get('peopleCount').touched}"
+                     class="form-control is-invalid"
+                     formControlName="peopleCount"
+                     placeholder="">
+              <div *ngIf="registerForm.get('peopleCount').hasError('required')
+              && registerForm.get('peopleCount').touched"
+                   class="invalid-feedback">
+                People Count is required.
+              </div>
+              <div *ngIf="registerForm.get('peopleCount').hasError('max')
+            && registerForm.get('peopleCount').touched"
+                   class="invalid-feedback">
+                People Count must be less than 120000.
+              </div>
+            </div>
+
+            <div class="form-group col-md-4">
+              <label>Phone</label>
+              <input type="text"
+                     mask="(000) 0000-0000"
+                     class="form-control"
+                     [(ngModel)]="event.phone"
+                     [ngClass]="{'is-invalid': registerForm.get('phone').errors 
+            && registerForm.get('phone').touched}"
+                     formControlName="phone"
+                     placeholder="(000) 90000-0000">
+              <div *ngIf="registerForm.get('phone').hasError('required')
+            && registerForm.get('phone').touched"
+                   class="invalid-feedback">
+                Phone is required.
+              </div>
+            </div>
+            <div class="form-group col-md-6">
+              <label>Email</label>
+              <input type="text"
+                     class="form-control"
+                     [(ngModel)]="event.email"
+                     [ngClass]="{'is-invalid': registerForm.get('email').errors 
+            && registerForm.get('email').touched}"
+                     formControlName="email"
+                     placeholder="e-mail">
+              <div *ngIf="registerForm.get('email').hasError('required')
+            && registerForm.get('email').touched"
+                   class="invalid-feedback">
+                Email is required.
+              </div>
+              <div *ngIf="registerForm.get('email').hasError('email')
+          && registerForm.get('email').touched"
+                   class="invalid-feedback">
+                Must be a valid e-mail.
+              </div>
+            </div>
+          </div>
+        </tab>
+        <tab heading="Batches">
+          <div>
+            <div formArrayName="batches"
+                 *ngFor="let batch of batches.controls; let i=index">
+              <fieldset [formGroupName]="i"
+                        class="form-group">
+                <legend class="d-flex justify-content-between capitalize">
+                  {{ batches.get(i+'.name').value === '' ? 'Batches' : batches.get(i+'.name').value }}
+                  <button class="btn btn-sm btn-warning mb-1"
+                          (click)="removeBatch(i)">remove</button>
+                </legend>
+                <div class="row">
+                  <div class="form-group col-md-4">
+                    <label>Name</label>
+                    <input type="text"
+                           class="form-control"
+                           formControlName="name"
+                           [ngClass]="{'is-invalid': batches.get(i+'.name').errors && batches.get(i+'.name').touched}"
+                           placeholder="Batch">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Quantity</label>
+                    <input type="number"
+                           class="form-control"
+                           formControlName="quantity"
+                           [ngClass]="{'is-invalid': batches.get(i+'.quantity').errors && batches.get(i+'.quantity').touched}"
+                           placeholder="000">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Price</label>
+                    <input class="form-control"
+                           formControlName="price"
+                           currencyMask
+                           [options]="{ prefix: '$ ', thousands: ',', decimal: '.', align: 'left' }"
+                           [ngClass]="{'is-invalid': batches.get(i+'.price').errors && batches.get(i+'.price').touched}"
+                           placeholder="$ 0.00">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>Start Date</label>
+                    <input type="Date"
+                           class="form-control"
+                           formControlName="startDate">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label>End Date</label>
+                    <input type="Date"
+                           class="form-control"
+                           formControlName="endDate">
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+            <button class="btn btn-outline-primary"
+                    (click)="addBatch()">
+              Add Batch
+            </button>
+          </div>
+        </tab>
+        <tab heading="Social Networks">
+          <div formArrayName="socialNetworks"
+               *ngFor="let socialNetwork of socialNetworks.controls; let j=index">
+            <fieldset [formGroupName]="j"
+                      class="form-group">
+              <legend class="d-flex justify-content-between capitalize">
+                {{ socialNetworks.get(j+'.name').value === '' ? 'Social Networks' : socialNetworks.get(j+'.name').value?.replace('fab fa-','') }}
+                <button class="btn btn-sm btn-warning mb-1"
+                        (click)="removeSocialNetwork(j)">remove</button>
+              </legend>
+              <div class="row">
+                <div class="form-group col-md-4">
+                  <label>Name</label>
+                  <select class="form-control"
+                          [ngClass]="{'is-invalid': socialNetworks.get(j+'.name').errors && socialNetworks.get(j+'.name').touched}"
+                          formControlName="name">
+                    <option value="">Select</option>
+                    <option value="fab fa-youtube">Youtube</option>
+                    <option value="fab fa-instagram">Instagram</option>
+                    <option value="fab fa-facebook">Facebook</option>
+                    <option value="fab fa-twitter">Twitter</option>
+                    <option value="fab fa-google">Google</option>
+                    <option value="fab fa-linkedin">Linkedin</option>
+                    <option value="fab fa-pinterest">Pinterest</option>
+                    <option value="fab fa-whatsapp">Whatsapp</option>
+                    <option value="fab fa-telegram">Telegram</option>
+                    <option value="fab fa-skype">Skype</option>
+                    <option value="fab fa-vimeo">Vimeo</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-8">
+                  <label>Link</label>
+                  <input type="text"
+                         prefix="http://"
+                         mask=""
+                         [ngClass]="{'is-invalid': socialNetworks.get(j+'.url').errors && socialNetworks.get(j+'.url').touched}"
+                         formControlName="url"
+                         class="form-control"
+                         placeholder="URL">
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <button class="btn btn-outline-primary"
+                  (click)="addSocialNetwork()">
+            Add Social Network
+          </button>
+        </tab>
+      </tabset>
+      <div class="row">
+        <div class="col-md-12 d-flex justify-content-end">
+          <button [disabled]="!registerForm.valid"
+                  class="btn btn-success my-2"
+                  (click)="saveEvent()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-row">
+        <div class="form-group col-md-9">
+          <input type="file"
+                 formControlName="imageUrl"
+                 #file
+                 (change)="onFileChange($event, $event.target.files)"
+                 class="form-control is-invalid"
+                 placeholder=""
+                 style="display: none">
+        </div>
+      </div>
+      <div class="card profile-card-2">
+        <div class="card-img-block">
+          <img [src]="imageUrl"
+               class="img-fluid"
+               (click)="file.click()"
+               style="cursor: pointer; width: 350px;"
+               alt="Card image cap" />
+        </div>
+        <div class="card-body pt-3">
+          <h4>{{event.theme}}</h4>
+          <p class="card-text">
+            <b>Location:</b> {{event.location}}
+            <br>
+            <b>Date:</b> {{event.eventDate | DateTimeFormatPipe}}
+          </p>
+          <hr>
+          <p class="card-text">
+            <b>Contacts</b><br>
+            <small class="text-muted">Phone: {{event.phone | mask: '(000) 00000-0000'}}</small>
+            <br>
+            <small class="text-muted">e-mail: {{event.email}}</small>
+          </p>
+          <p class="card-text">
+            Capacity:
+            <small class="text-muted">{{event.peopleCount}}</small>
+          </p>
+          <div class="row">
+            <div class="icon-block col-md-8 iconesSociais">
+              <a href="{{socialNetworks.get(l+'.url').value}}"
+                 *ngFor="let socialNetwork of socialNetworks.controls; let l=index;"
+                 class="mr-3"
+                 target="_blank">
+                <i class="{{socialNetworks.get(l+'.name').value}}"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+

@@ -1,0 +1,228 @@
+<app-titulo [title]='title'></app-titulo>
+<div class="d-flex">
+    <div class="form-inline mr-auto">
+        <div class="form-group mb-2">
+            <label class="mr-2">Filter:</label>
+            <input type="text"
+                   class="form-control mr-2"
+                   placeholder="search"
+                   [(ngModel)]="filterValue">
+        </div>
+    </div>
+    <div>
+        <button class="btn btn-outline-primary"
+                (click)="newRegister(template)">
+            <i class="fa fa-plus-circle"></i>
+            &nbsp;New Speaker
+        </button>
+    </div>
+</div>
+<h3>Filter: {{filterValue}}</h3>
+<table class="table table-striped">
+    <thead class="thead-light">
+        <tr>
+            <th>
+                <button class="btn btn-outline-primary"
+                        (click)="toggleImage()"
+                        title="{{showImage ? 'Hide image' : 'Show image'}}">
+                    <i class="{{showImage ? 'fa fa-eye-slash' : 'fa fa-eye'}}"></i>
+                </button>
+            </th>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Options</th>
+        </tr>
+    </thead>
+    <tbody *ngIf="filteredSpeakers && filteredSpeakers.length">
+        <tr *ngFor="let speaker of filteredSpeakers">
+            <td>
+                <img *ngIf="showImage"
+                     src="http://localhost:5000/Resources/Images/{{speaker.imageUrl}}?dtimg={{imageTimestamp}}"
+                     [style.width.px]="imageWidth"
+                     [style.margin.px]="imageMargin">
+            </td>
+            <td>{{speaker.id}}</td>
+            <td>{{speaker.name}}</td>
+            <td>{{speaker.phone}}</td>
+            <td>{{speaker.email}}</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-danger mr-1"
+                            tooltip="Delete"
+                            (click)="deleteSpeaker(speaker, confirm)">
+                        <i class="fa fa-eraser"></i>
+                    </button>
+                    <button class="btn btn-sm btn-warning"
+                            tooltip="Detailed edit"
+                            (click)="loadForm(speaker, template)">
+                        <i class="fa fa-edit"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+    <tfoot *ngIf="filteredSpeakers && !filteredSpeakers.length">
+        <tr>
+            <td colspan="7"
+                class="text-center">
+                <h4>
+                    No speakers found
+                </h4>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+
+<div bsModal
+     #template="bs-modal"
+     class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="dialog-sizes-name1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 id="dialog-sizes-name1"
+                    class="modal-title pull-left">Speaker</h4>
+                <button type="button"
+                        class="close pull-right"
+                        (click)="template.hide()"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form [formGroup]="registerForm">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label>Name</label>
+                            <input type="text"
+                                   [ngClass]="{'is-invalid': registerForm.get('name').errors && registerForm.get('name').touched}"
+                                   class="form-control"
+                                   formControlName="name"
+                                   placeholder="Enter name">
+                            <div *ngIf="registerForm.get('name').hasError('required') && registerForm.get('name').touched"
+                                 class="invalid-feedback">Name is required</div>
+                            <div *ngIf="registerForm.get('name').hasError('minlength') && registerForm.get('name').touched"
+                                 class="invalid-feedback">Name must have at least 4 characters</div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <label>Short Bio</label>
+                            <ckeditor [editor]="shortBioEditor"
+                                      formControlName="shortBio"></ckeditor>
+                            <div *ngIf="registerForm.get('shortBio').hasError('required') && registerForm.get('shortBio').touched"
+                                 class="invalid-feedback">Short bio is required</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-row">
+                                <div class="form-group col-md-9">
+                                    <input type="file"
+                                           formControlName="imageUrl"
+                                           #file
+                                           (change)="onFileChange($event, $event.target.files)"
+                                           class="form-control is-invalid"
+                                           placeholder=""
+                                           style="display: none">
+                                </div>
+                            </div>
+                            <div class="card profile-card-2">
+                                <div class="card-img-block">
+                                    <img [src]="imageUrl"
+                                         class="img-fluid"
+                                         (click)="file.click()"
+                                         style="cursor: pointer; width: 350px;"
+                                         alt="Card image cap" />
+                                </div>
+                                <div *ngIf="registerForm.get('imageUrl').hasError('required') && registerForm.get('imageUrl').touched"
+                                     class="invalid-feedback">Image is required</div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-5">
+                            <label>E-mail</label>
+                            <input type="text"
+                                   [ngClass]="{'is-invalid': registerForm.get('email').errors && registerForm.get('email').touched}"
+                                   class="form-control"
+                                   formControlName="email">
+                            <div *ngIf="registerForm.get('email').hasError('required') && registerForm.get('email').touched"
+                                 class="invalid-feedback">E-mail is required</div>
+                            <div *ngIf="registerForm.get('email').hasError('email') && registerForm.get('email').touched"
+                                 class="invalid-feedback">Enter a valid e-mail</div>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Phone</label>
+                            <input type="text"
+                                   mask="(000) 0000-0000"
+                                   [ngClass]="{'is-invalid': registerForm.get('phone').errors && registerForm.get('phone').touched}"
+                                   class="form-control"
+                                   formControlName="phone"
+                                   placeholder="Enter phone">
+                            <div *ngIf="registerForm.get('phone').hasError('required') && registerForm.get('phone').touched"
+                                 class="invalid-feedback">
+                                Phone is required.
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary"
+                        (click)="cancel(template)">
+                    Cancel
+                </button>
+                <button class="btn btn-primary ml-auto"
+                        [disabled]="!registerForm.valid"
+                        (click)="saveChanges(template)">
+                    Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div bsModal
+     #confirm="bs-modal"
+     class="modal fade"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="dialog-sizes-name1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title pull-left">
+                    Deleting Speaker
+                </h4>
+                <button type="button"
+                        class="close pull-right"
+                        (click)="confirm.hide()"
+                        aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>{{deleteSpeakerBody}}</p>
+            </div>
+            <div class="modal-footer btn-group d-flex">
+                <button type="button"
+                        class="btn btn-outline-primary"
+                        (click)="confirm.hide()">
+                    CANCEL
+                </button>
+                <button type="button"
+                        class="btn btn-outline-danger"
+                        (click)="confirmDelete(confirm)">
+                    DELETE
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -5,103 +5,103 @@ using System.Text;
 namespace ProAgil.Domain.Agent
 {
     /// <summary>
-    /// Centraliza todos os prompts utilizados pelo AgentService
+    /// Centralizes all prompts used by the AgentService
     /// </summary>
     public static class AgentPrompts
     {
         public static string BuildIdentificationPrompt(string apiDocumentation, string message)
         {
-            return $@"Você é um especialista em APIs REST que identifica qual endpoint deve ser chamado baseado na intenção do usuário.
+            return $@"You are an expert in REST APIs that identifies which endpoint should be called based on user intent.
 
-Documentação Completa da API:
+Complete API Documentation:
 {apiDocumentation}
 
-Mensagem do usuário: {message}
+User message: {message}
 
-INSTRUÇÕES:
-1. Analise a mensagem do usuário e identifique a intenção (listar, criar, atualizar, deletar, buscar, etc.)
-2. Encontre o controller e action que melhor corresponde à intenção
-3. Preste atenção especial à DESCRIÇÃO de cada endpoint
-4. Para buscas/listagens, use endpoints GET ou POST com 'Filter', 'Search', 'GetBy', etc.
-5. Para criação, use endpoints POST com 'Save', 'Create', 'Add', etc.
+INSTRUCTIONS:
+1. Analyze the user message and identify the intent (list, create, update, delete, search, etc.)
+2. Find the controller and action that best matches the intent
+3. Pay special attention to the DESCRIPTION of each endpoint
+4. For searches/listings, use GET or POST endpoints with 'Filter', 'Search', 'GetBy', etc.
+5. For creation, use POST endpoints with 'Save', 'Create', 'Add', etc.
 
-EXEMPLOS:
-- 'Liste todos os evento criados' => Evento.Get
-- 'Criar um novo Evento' => Evento.Save (porque cria evento)
-- 'Obter detalhes do Evento 123' => Evento.Get(id) (porque obtem um Evento especifico)
-- 'Atualizar local do Evento' => Evento.Put(int id, EventoDto model) (porque atualiza o evento)
+EXAMPLES:
+- 'List all created events' => Event.Get
+- 'Create a new Event' => Event.Save (because it creates an event)
+- 'Get details of Event 123' => Event.Get(id) (because it gets a specific Event)
+- 'Update Event location' => Event.Put(int id, EventDto model) (because it updates the event)
 
-Responda APENAS com 'ControllerName.ActionName' (sem Controller no nome).
-Exemplo de resposta: Evento.Get";
+Respond ONLY with 'ControllerName.ActionName' (without Controller in the name).
+Example response: Event.Get";
         }
 
         public static string BuildExecutionAnalysisPrompt(string message)
         {
-            return $@"Você é um especialista em analisar comandos complexos e determinar se requerem múltiplas etapas.
+            return $@"You are an expert in analyzing complex commands and determining if they require multiple steps.
 
-IMPORTANTE: Use APENAS os métodos que existem na API. Nunca invente métodos.
+IMPORTANT: Use ONLY methods that exist in the API. Never invent methods.
 
-MÉTODOS DISPONÍVEIS NO EventoController:
-- Get(int id): Busca um Evento pelo ID
-- Post(EventoDto model): Salva um novo Evento
-- Put(int id, EventoDto model): Edita um Evento existente
-- Get(): Busca todos eventos(Não suporta limite 'top X' ou 'first X' nativamente)
-- Delete(int id): Deleta um Evento
+AVAILABLE METHODS IN EventController:
+- Get(int id): Search for an Event by ID
+- Post(EventDto model): Save a new Event
+- Put(int id, EventDto model): Edit an existing Event
+- Get(): Get all events (Does not natively support 'top X' or 'first X' limits)
+- Delete(int id): Delete an Event
 
-COMANDOS QUE REQUEREM MÚLTIPLAS ETAPAS (isMultiStep: true):
-1. OPERAÇÕES DE CÓPIA/CLONE:
-   - Comandos com ""copiar/clonar"" seguido de ""modificar/alterar"" seguido de ""salvar""
+COMMANDS THAT REQUIRE MULTIPLE STEPS (isMultiStep: true):
+1. COPY/CLONE OPERATIONS:
+   - Commands with ""copy/clone"" followed by ""modify/change"" followed by ""save""
 
-2. LISTAGENS COM LIMITES OU FILTROS ESPECIAIS (MUITO IMPORTANTE):
-   - Comandos que pedem ""X primeiros"", ""Top X"", ""Último"", ""Apenas 1""
-   - A API retorna TODOS os resultados. Você DEVE adicionar um passo de transformação para filtrar a quantidade.
-   - Exemplo: ""3 primeiros evento"" -> Requer passo de transformação.
+2. LISTINGS WITH LIMITS OR SPECIAL FILTERS (VERY IMPORTANT):
+   - Commands that ask for ""first X"", ""Top X"", ""Last"", ""Only 1""
+   - The API returns ALL results. You MUST add a transformation step to filter the quantity.
+   - Example: ""first 3 events"" -> Requires transformation step.
 
-3. OPERAÇÕES SEQUENCIAIS:
-   - Comandos com conectores como ""e depois"", ""em seguida"", ""então""
+3. SEQUENTIAL OPERATIONS:
+   - Commands with connectors like ""and then"", ""next"", ""then""
 
-COMO PLANEJAR:
-- Se o usuário pedir ""Liste os 3 primeiros eventos"":
-  - Passo 1: Get(para buscar todos os evento do período)
-  - Passo 2: TRANSFORM_DATA (para selecionar apenas os 3 primeiros da lista retornada)
+HOW TO PLAN:
+- If the user asks ""List the first 3 events"":
+  - Step 1: Get (to fetch all events from the period)
+  - Step 2: TRANSFORM_DATA (to select only the first 3 from the returned list)
 
-EXEMPLOS DE MULTI-ETAPA:
+MULTI-STEP EXAMPLES:
 
-- 'Liste os 3 primeiros evento deste mês'
-  - Etapa 1: {{""order"": 1, ""controller"": ""Evento"", ""action"": ""Get"", ""parameterSource"": ""user_input"", ""description"": ""Buscar todos os evento deste mês""}}
-  - Etapa 2: {{""order"": 2, ""controller"": ""Evento"", ""action"": ""FILTER_DATA"", ""parameterSource"": ""previous_step"", ""description"": ""A partir da lista anterior filtre aqueles do mês corrente"", ""transformation"": ""select_month""}}
-- Etapa 3: {{""order"": 3, ""controller"": ""Evento"", ""action"": ""LIMIT_DATA"", ""parameterSource"": ""previous_step"", ""description"": ""Limitar a lista aos 3 primeiros evento"", ""transformation"": ""take_first_3""}}  
+- 'List the first 3 events this month'
+  - Step 1: {{""order"": 1, ""controller"": ""Event"", ""action"": ""Get"", ""parameterSource"": ""user_input"", ""description"": ""Fetch all events this month""}}
+  - Step 2: {{""order"": 2, ""controller"": ""Event"", ""action"": ""FILTER_DATA"", ""parameterSource"": ""previous_step"", ""description"": ""From the previous list filter those from the current month"", ""transformation"": ""select_month""}}
+- Step 3: {{""order"": 3, ""controller"": ""Event"", ""action"": ""LIMIT_DATA"", ""parameterSource"": ""previous_step"", ""description"": ""Limit the list to the first 3 events"", ""transformation"": ""take_first_3""}}  
 
-- 'Copie o Evento 1907 adicione 30 dias na data do evento e depois salve'
-  - Etapa 1: {{""order"": 1, ""controller"": ""Evento"", ""action"": ""Get"", ""parameterSource"": ""user_input"", ""description"": ""Buscar Evento 1907""}}
-  - Etapa 2: {{""order"": 2, ""controller"": ""Evento"", ""action"": ""TRANSFORM_DATA"", ""parameterSource"": ""previous_step"", ""description"": ""Adicionar 30 dias na data do evento"", ""transformation"": ""add_30_days""}}
-  - Etapa 3: {{""order"": 3, ""controller"": ""Evento"", ""action"": ""Post"", ""parameterSource"": ""previous_step"", ""description"": ""Salvar o novo Evento com a data modificada""}}
+- 'Copy Event 1907 add 30 days to the event date and then save'
+  - Step 1: {{""order"": 1, ""controller"": ""Event"", ""action"": ""Get"", ""parameterSource"": ""user_input"", ""description"": ""Fetch Event 1907""}}
+  - Step 2: {{""order"": 2, ""controller"": ""Event"", ""action"": ""TRANSFORM_DATA"", ""parameterSource"": ""previous_step"", ""description"": ""Add 30 days to the event date"", ""transformation"": ""add_30_days""}}
+  - Step 3: {{""order"": 3, ""controller"": ""Event"", ""action"": ""Post"", ""parameterSource"": ""previous_step"", ""description"": ""Save the new Event with the modified date""}}
 
-EXEMPLOS DE ETAPA ÚNICA (isMultiStep: false):
-- ""Liste todos os eventos"" (Sem limite de quantidade)
-- ""Busque o Evento 1907""
-- ""Delete o Evento 123""
+SINGLE STEP EXAMPLES (isMultiStep: false):
+- ""List all events"" (No quantity limit)
+- ""Search for Event 1907""
+- ""Delete Event 123""
 
-MENSAGEM DO USUÁRIO:
+USER MESSAGE:
 {message}
 
-Responda em JSON com esta estrutura:
+Respond in JSON with this structure:
 {{
   ""isMultiStep"": true/false,
-  ""reasoning"": ""explicação do motivo da decisão"",
+  ""reasoning"": ""explanation of the decision"",
   ""steps"": [
     {{
       ""order"": 1,
-      ""description"": ""descrição do passo"",
-      ""controller"": ""NomeController"",
-      ""action"": ""NomeAction"" ou ""TRANSFORM_DATA"" para processamento interno,
-      ""parameterSource"": ""user_input"" ou ""previous_step"" ou ""computed"",
-      ""transformation"": ""tipo de transformação se action for TRANSFORM_DATA""
+      ""description"": ""step description"",
+      ""controller"": ""ControllerName"",
+      ""action"": ""ActionName"" or ""TRANSFORM_DATA"" for internal processing,
+      ""parameterSource"": ""user_input"" or ""previous_step"" or ""computed"",
+      ""transformation"": ""transformation type if action is TRANSFORM_DATA""
     }}
   ]
 }}
 
-Se for etapa única, retorne isMultiStep: false e steps vazio.";
+If single step, return isMultiStep: false and empty steps.";
         }
 
         public static string BuildExtractionPrompt(
@@ -114,7 +114,7 @@ Se for etapa única, retorne isMultiStep: false e steps vazio.";
             var sb = new StringBuilder();
             var currentDate = DateTime.Now;
 
-            // Calcular diferentes contextos temporais
+            // Calculate different temporal contexts
             var firstDayOfMonth = new DateTime(currentDate.Year, currentDate.Month, 1);
             var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
             var firstDayOfLastMonth = firstDayOfMonth.AddMonths(-1);
@@ -124,36 +124,36 @@ Se for etapa única, retorne isMultiStep: false e steps vazio.";
             var firstDayOfWeek = currentDate.AddDays(-(int)currentDate.DayOfWeek);
             var lastDayOfWeek = firstDayOfWeek.AddDays(6);
 
-            sb.AppendLine("Você é um assistente especializado em preencher parâmetros de APIs.");
+            sb.AppendLine("You are an assistant specialized in filling API parameters.");
             sb.AppendLine();
-            sb.AppendLine("## CONTEXTO TEMPORAL");
-            sb.AppendLine($"- Data/hora atual: {currentDate:yyyy-MM-dd HH:mm:ss}");
-            sb.AppendLine($"- Hoje: {currentDate:yyyy-MM-dd}");
+            sb.AppendLine("## TEMPORAL CONTEXT");
+            sb.AppendLine($"- Current date/time: {currentDate:yyyy-MM-dd HH:mm:ss}");
+            sb.AppendLine($"- Today: {currentDate:yyyy-MM-dd}");
             sb.AppendLine(
-                $"- Este mês: {firstDayOfMonth:yyyy-MM-dd} a {lastDayOfMonth:yyyy-MM-dd}"
+                $"- This month: {firstDayOfMonth:yyyy-MM-dd} to {lastDayOfMonth:yyyy-MM-dd}"
             );
             sb.AppendLine(
-                $"- Mês passado: {firstDayOfLastMonth:yyyy-MM-dd} a {lastDayOfLastMonth:yyyy-MM-dd}"
+                $"- Last month: {firstDayOfLastMonth:yyyy-MM-dd} to {lastDayOfLastMonth:yyyy-MM-dd}"
             );
             sb.AppendLine(
-                $"- Esta semana: {firstDayOfWeek:yyyy-MM-dd} a {lastDayOfWeek:yyyy-MM-dd}"
+                $"- This week: {firstDayOfWeek:yyyy-MM-dd} to {lastDayOfWeek:yyyy-MM-dd}"
             );
-            sb.AppendLine($"- Este ano: {firstDayOfYear:yyyy-MM-dd} a {lastDayOfYear:yyyy-MM-dd}");
+            sb.AppendLine($"- This year: {firstDayOfYear:yyyy-MM-dd} to {lastDayOfYear:yyyy-MM-dd}");
             sb.AppendLine();
 
-            sb.AppendLine($"## MENSAGEM DO USUÁRIO");
+            sb.AppendLine($"## USER MESSAGE");
             sb.AppendLine(message);
             sb.AppendLine();
 
-            sb.AppendLine($"## MÉTODO A SER CHAMADO");
+            sb.AppendLine($"## METHOD TO BE CALLED");
             sb.AppendLine($"{controllerName}.{actionName}");
             sb.AppendLine();
 
-            sb.AppendLine("## PARÂMETROS NECESSÁRIOS");
+            sb.AppendLine("## REQUIRED PARAMETERS");
             sb.AppendLine(ParameterInfoBuilder.BuildParameterInfo(parameters));
             sb.AppendLine();
 
-            sb.AppendLine("## INSTRUÇÕES DE PREENCHIMENTO");
+            sb.AppendLine("## FILLING INSTRUCTIONS");
             sb.AppendLine();
 
             var param = parameters.FirstOrDefault();
@@ -165,11 +165,11 @@ Se for etapa única, retorne isMultiStep: false e steps vazio.";
             }
 
             sb.AppendLine();
-            sb.AppendLine("## RESPOSTA ESPERADA");
-            sb.AppendLine("- Retorne APENAS o JSON válido com os parâmetros");
-            sb.AppendLine("- NÃO adicione explicações, comentários ou texto adicional");
-            sb.AppendLine("- Use null para valores não especificados");
-            sb.AppendLine("- Seja preciso na interpretação de termos temporais");
+            sb.AppendLine("## EXPECTED RESPONSE");
+            sb.AppendLine("- Return ONLY valid JSON with parameters");
+            sb.AppendLine("- DO NOT add explanations, comments, or additional text");
+            sb.AppendLine("- Use null for unspecified values");
+            sb.AppendLine("- Be precise in interpreting temporal terms");
 
             return sb.ToString();
         }
@@ -181,55 +181,55 @@ Se for etapa única, retorne isMultiStep: false e steps vazio.";
             string userMessage
         )
         {
-            return $@"Você é um especialista em analisar e transformar dados de evento para atender exatamente à solicitação do usuário.
+            return $@"You are an expert in analyzing and transforming event data to exactly meet the user's request.
 
-MENSAGEM ORIGINAL DO USUÁRIO:
+ORIGINAL USER MESSAGE:
 ""{userMessage}""
 
-DADOS DO PASSO ANTERIOR (Resultado da busca/operação anterior):
+PREVIOUS STEP DATA (Result of previous search/operation):
 {dataToTransform}
 
-TRANSFORMAÇÃO TÉCNICA SUGERIDA: {transformation}
-DESCRIÇÃO TÉCNICA: {description}
+SUGGESTED TECHNICAL TRANSFORMATION: {transformation}
+TECHNICAL DESCRIPTION: {description}
 
-OBJETIVO:
-Analise a MENSAGEM ORIGINAL DO USUÁRIO e verifique se os DADOS DO PASSO ANTERIOR atendem ao que foi Evento.
-Se necessário, filtre, ordene ou transforme os dados para corresponder EXATAMENTE ao que o usuário pediu.
+OBJECTIVE:
+Analyze the ORIGINAL USER MESSAGE and verify if the PREVIOUS STEP DATA meets what was requested.
+If necessary, filter, sort, or transform the data to EXACTLY match what the user asked for.
 
-TIPOS DE OPERAÇÃO:
+OPERATION TYPES:
 
-1. FILTRO/SELEÇÃO (ex: ""3 primeiros"", ""último"", ""do palestrante X""):
-   - Se o usuário pediu ""X primeiros"", retorne apenas os X primeiros itens do array.
-   - Se o usuário pediu ""último"", retorne apenas o último.
-   - Se o usuário pediu um filtro específico não aplicado anteriormente, aplique-o agora.
-   - Preserve a estrutura dos objetos.
+1. FILTER/SELECTION (e.g.: ""first 3"", ""last"", ""from speaker X""):
+   - If the user asked for ""first X"", return only the first X items from the array.
+   - If the user asked for ""last"", return only the last one.
+   - If the user asked for a specific filter not previously applied, apply it now.
+   - Preserve the object structure.
 
-2. MODIFICAÇÃO (ex: ""altere o valor"", ""copie e mude X""):
-   - Se for uma modificação, aplique as regras de transformação (add_days, set_value, etc.).
-   - Mantenha os campos obrigatórios.
+2. MODIFICATION (e.g.: ""change the value"", ""copy and change X""):
+   - If it's a modification, apply the transformation rules (add_days, set_value, etc.).
+   - Keep required fields.
 
-INSTRUÇÕES CRÍTICAS PARA FILTROS (Arrays):
-- Retorne um ARRAY JSON válido: [{{...}}, {{...}}]
-- Se o usuário pediu ""3 primeiros"", o array DEVE ter no máximo 3 elementos.
-- Se a lista de entrada estiver vazia, retorne array vazio [].
-- NÃO retorne apenas os IDs, retorne os objetos completos.
+CRITICAL INSTRUCTIONS FOR FILTERS (Arrays):
+- Return a valid JSON ARRAY: [{{...}}, {{...}}]
+- If the user asked for ""first 3"", the array MUST have at most 3 elements.
+- If the input list is empty, return empty array [].
+- DO NOT return only IDs, return complete objects.
 
-INSTRUÇÕES CRÍTICAS PARA MODIFICAÇÕES (Objetos):
-- Retorne o objeto modificado.
-- Remova campos de sistema (id, dhCriacao, rPs, etc.) se for para criar novo.
-- Mantenha campos obrigatórios (nomeConfiguracaoProduto, etc.).
+CRITICAL INSTRUCTIONS FOR MODIFICATIONS (Objects):
+- Return the modified object.
+- Remove system fields (id, createdAt, rPs, etc.) if creating new.
+- Keep required fields (productConfigurationName, etc.).
 
-EXEMPLOS:
+EXAMPLES:
 
-Exemplo 1 - ""Liste os 3 primeiros evento""
-Entrada: [A, B, C, D, E]
-Saída: [A, B, C] (Apenas os 3 primeiros)
+Example 1 - ""List the first 3 events""
+Input: [A, B, C, D, E]
+Output: [A, B, C] (Only the first 3)
 
-Exemplo 2 - ""Pegue o último Evento e mude o palestrante para Globo""
-Entrada: [A, B, C]
-Saída: {{...C, palestrante: ""Globo""...}} (Objeto modificado)
+Example 2 - ""Get the last Event and change the speaker to Globe""
+Input: [A, B, C]
+Output: {{...C, speaker: ""Globe""...}} (Modified object)
 
-RETORNE APENAS O JSON VÁLIDO COM O RESULTADO FINAL (ARRAY OU OBJETO). SEM EXPLICAÇÕES.";
+RETURN ONLY VALID JSON WITH THE FINAL RESULT (ARRAY OR OBJECT). NO EXPLANATIONS.";
         }
 
         public static string BuildParameterMappingPrompt(
@@ -239,30 +239,30 @@ RETORNE APENAS O JSON VÁLIDO COM O RESULTADO FINAL (ARRAY OU OBJETO). SEM EXPLI
             string typePropertiesDescription
         )
         {
-            return $@"Você é um especialista em transformar dados de API.
+            return $@"You are an expert in transforming API data.
 
-DADOS DO PASSO ANTERIOR:
+PREVIOUS STEP DATA:
 {previousDataJson}
 
-PASSO ATUAL: {description}
+CURRENT STEP: {description}
 
-TIPO DE PARÂMETRO NECESSÁRIO: {targetTypeName}
+REQUIRED PARAMETER TYPE: {targetTypeName}
 
-PROPRIEDADES DO TIPO:
+TYPE PROPERTIES:
 {typePropertiesDescription}
 
-INSTRUÇÕES CRÍTICAS:
-1. Extraia o objeto 'data' dos dados anteriores se existir
-2. Mantenha TODOS os campos obrigatórios com seus valores originais
-3. Para EventoNewModel:
-   - COPIE EXATAMENTE: Lotes, RedesSociais, PalestrantesEventos
-   - COPIE: Local, Tema, Telefone, Email e outros campos simples
-   4. Remova APENAS campos de sistema: id
-   5. Mantenha valores null, vazios ou zero conforme estão no original
+CRITICAL INSTRUCTIONS:
+1. Extract the 'data' object from previous data if it exists
+2. Keep ALL required fields with their original values
+3. For EventNewModel:
+   - COPY EXACTLY: Batches, SocialNetworks, SpeakerEvents
+   - COPY: Location, Theme, Phone, Email and other simple fields
+   4. Remove ONLY system fields: id
+   5. Keep null, empty, or zero values as they are in the original
 
-⚠️ CRÍTICO: NÃO transforme o objeto em valores padrão/zerados. PRESERVE os dados originais!
+⚠️ CRITICAL: DO NOT transform the object to default/zeroed values. PRESERVE original data!
 
-Retorne APENAS o JSON válido com o objeto transformado:";
+Return ONLY valid JSON with the transformed object:";
         }
 
         private static string BuildParameterInstructions(
@@ -277,21 +277,21 @@ Retorne APENAS o JSON válido com o objeto transformado:";
 
             if (paramType == typeof(int) || paramType == typeof(int?))
             {
-                sb.AppendLine("IMPORTANTE: O parâmetro esperado é um número inteiro.");
+                sb.AppendLine("IMPORTANT: The expected parameter is an integer.");
                 sb.AppendLine(
-                    "- Se a mensagem mencionar 'Evento X', 'id X', 'código X', extraia o número"
+                    "- If the message mentions 'Event X', 'id X', 'code X', extract the number"
                 );
-                sb.AppendLine("- Retorne apenas o número (ex: 12345), não um objeto JSON");
+                sb.AppendLine("- Return only the number (e.g.: 12345), not a JSON object");
                 sb.AppendLine();
-                sb.AppendLine($"Exemplo para '{param.Name}': 42");
+                sb.AppendLine($"Example for '{param.Name}': 42");
             }
             else if (paramType == typeof(string))
             {
-                sb.AppendLine("IMPORTANTE: O parâmetro esperado é uma string.");
-                sb.AppendLine("- Extraia o texto mencionado na mensagem");
-                sb.AppendLine("- Retorne apenas a string, sem aspas extras");
+                sb.AppendLine("IMPORTANT: The expected parameter is a string.");
+                sb.AppendLine("- Extract the text mentioned in the message");
+                sb.AppendLine("- Return only the string, without extra quotes");
                 sb.AppendLine();
-                sb.AppendLine($"Exemplo para '{param.Name}': Magazine Luiza");
+                sb.AppendLine($"Example for '{param.Name}': Magazine Store");
             }
             else if (
                 paramType.IsGenericType
@@ -299,41 +299,41 @@ Retorne APENAS o JSON válido com o objeto transformado:";
             )
             {
                 var innerType = paramType.GetGenericArguments()[0];
-                sb.AppendLine($"IMPORTANTE: O parâmetro esperado é uma lista de {innerType.Name}.");
-                sb.AppendLine("- Retorne um array JSON");
+                sb.AppendLine($"IMPORTANT: The expected parameter is a list of {innerType.Name}.");
+                sb.AppendLine("- Return a JSON array");
                 sb.AppendLine();
                 sb.AppendLine(
-                    $"Exemplo: [{(innerType == typeof(int) ? "1, 2, 3" : "\"item1\", \"item2\"")}]"
+                    $"Example: [{(innerType == typeof(int) ? "1, 2, 3" : "\"item1\", \"item2\"")}]"
                 );
             }
             else if (paramType.IsClass)
             {
-                sb.AppendLine("IMPORTANTE: O parâmetro esperado é um objeto complexo.");
+                sb.AppendLine("IMPORTANT: The expected parameter is a complex object.");
                 sb.AppendLine();
-                sb.AppendLine("### Regras para preenchimento:");
-                sb.AppendLine("1. **Interpretação Temporal:**");
+                sb.AppendLine("### Filling rules:");
+                sb.AppendLine("1. **Temporal Interpretation:**");
                 sb.AppendLine(
-                    "   - 'este mês' / 'mês atual' → DataEvento = primeiro dia do mês, DataEvento = último dia do mês"
+                    "   - 'this month' / 'current month' → EventDate = first day of month, EventDate = last day of month"
                 );
-                sb.AppendLine("   - 'hoje' → data atual");
-                sb.AppendLine("   - 'esta semana' → primeiro e último dia da semana");
+                sb.AppendLine("   - 'today' → current date");
+                sb.AppendLine("   - 'this week' → first and last day of the week");
                 sb.AppendLine(
-                    "   - 'mês passado' / 'último mês' → primeiro e último dia do mês anterior"
+                    "   - 'last month' / 'previous month' → first and last day of the previous month"
                 );
-                sb.AppendLine("   - 'este ano' → 01/01 até 31/12 do ano atual");
+                sb.AppendLine("   - 'this year' → 01/01 to 12/31 of current year");
                 sb.AppendLine();
-                sb.AppendLine("2. **Datas:**");
-                sb.AppendLine("   - Formato ISO 8601: 'yyyy-MM-ddTHH:mm:ss'");
-                sb.AppendLine("   - Início do dia: 'T00:00:00'");
-                sb.AppendLine("   - Fim do dia: 'T23:59:59'");
+                sb.AppendLine("2. **Dates:**");
+                sb.AppendLine("   - ISO 8601 format: 'yyyy-MM-ddTHH:mm:ss'");
+                sb.AppendLine("   - Start of day: 'T00:00:00'");
+                sb.AppendLine("   - End of day: 'T23:59:59'");
                 sb.AppendLine();
-                sb.AppendLine("3. **Valores não mencionados:**");
-                sb.AppendLine("   - Use null para propriedades não especificadas");
-                sb.AppendLine("   - Não use valores padrão (0, \"\", false)");
+                sb.AppendLine("3. **Unmentioned values:**");
+                sb.AppendLine("   - Use null for unspecified properties");
+                sb.AppendLine("   - Do not use default values (0, \"\", false)");
                 sb.AppendLine();
                 sb.AppendLine("4. **Strings:**");
-                sb.AppendLine("   - Copie exatamente como aparecem na mensagem");
-                sb.AppendLine("   - Mantenha maiúsculas/minúsculas");
+                sb.AppendLine("   - Copy exactly as they appear in the message");
+                sb.AppendLine("   - Keep uppercase/lowercase");
                 sb.AppendLine();
 
                 sb.Append(
@@ -359,36 +359,36 @@ Retorne APENAS o JSON válido com o objeto transformado:";
         )
         {
             var sb = new StringBuilder();
-            sb.AppendLine("### Exemplos:");
+            sb.AppendLine("### Examples:");
 
             if (paramType.Name.Contains("Filter"))
             {
                 sb.AppendLine();
-                sb.AppendLine($"Exemplo 1 - 'Liste os evento criados este mês':");
+                sb.AppendLine($"Example 1 - 'List events created this month':");
                 sb.AppendLine("{");
                 sb.AppendLine($"  \"{param.Name}\": {{");
                 sb.AppendLine(
-                    $"    \"DataInicioCriacao\": \"{firstDayOfMonth:yyyy-MM-dd}T00:00:00\","
+                    $"    \"CreationStartDate\": \"{firstDayOfMonth:yyyy-MM-dd}T00:00:00\","
                 );
                 sb.AppendLine(
-                    $"    \"DataTerminoCriacao\": \"{lastDayOfMonth:yyyy-MM-dd}T23:59:59\""
+                    $"    \"CreationEndDate\": \"{lastDayOfMonth:yyyy-MM-dd}T23:59:59\""
                 );
                 sb.AppendLine("  }");
                 sb.AppendLine("}");
                 sb.AppendLine();
-                sb.AppendLine($"Exemplo 2 - 'evento do palestrante Magazine Luiza criados hoje':");
+                sb.AppendLine($"Example 2 - 'Events from speaker Magazine Store created today':");
                 sb.AppendLine("{");
                 sb.AppendLine($"  \"{param.Name}\": {{");
-                sb.AppendLine("    \"Mnepalestrante\": \"Magazine Luiza\",");
-                sb.AppendLine($"    \"DataInicioCriacao\": \"{currentDate:yyyy-MM-dd}T00:00:00\",");
-                sb.AppendLine($"    \"DataTerminoCriacao\": \"{currentDate:yyyy-MM-dd}T23:59:59\"");
+                sb.AppendLine("    \"SpeakerName\": \"Magazine Store\",");
+                sb.AppendLine($"    \"CreationStartDate\": \"{currentDate:yyyy-MM-dd}T00:00:00\",");
+                sb.AppendLine($"    \"CreationEndDate\": \"{currentDate:yyyy-MM-dd}T23:59:59\"");
                 sb.AppendLine("  }");
                 sb.AppendLine("}");
             }
             else
             {
                 sb.AppendLine();
-                sb.AppendLine($"Estrutura esperada:");
+                sb.AppendLine($"Expected structure:");
                 sb.AppendLine("{");
                 sb.AppendLine($"  \"{param.Name}\": {{");
 
@@ -400,7 +400,7 @@ Retorne APENAS o JSON válido com o objeto transformado:";
                 }
                 if (props.Length > 5)
                 {
-                    sb.AppendLine("    // ... outras propriedades");
+                    sb.AppendLine("    // ... other properties");
                 }
 
                 sb.AppendLine("  }");

@@ -15,7 +15,8 @@ namespace ProAgil.Repository
             _context = context;
             _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
-        //Gerais
+        
+        // General
         public void Add<T>(T entity) where T : class
         {
             _context.Add(entity);
@@ -36,17 +37,17 @@ namespace ProAgil.Repository
             return (await _context.SaveChangesAsync()) > 0;
         }
 
-        public async Task<Evento[]> GetAllEventoAsync(bool includePalestrantes = false)
+        public async Task<Event[]> GetAllEventsAsync(bool includeSpeakers = false)
         {
-            IQueryable<Evento> query = _context.Eventos
-                .Include(c => c.Lotes)
-                .Include(c => c.RedesSociais);
+            IQueryable<Event> query = _context.Events
+                .Include(c => c.Batches)
+                .Include(c => c.SocialNetworks);
 
-            if (includePalestrantes)
+            if (includeSpeakers)
             {
                 query = query
-                    .Include(pe => pe.PalestrantesEventos)
-                    .ThenInclude(p => p.Palestrante);
+                    .Include(pe => pe.SpeakerEvents)
+                    .ThenInclude(p => p.Speaker);
             }
 
             query = query.AsNoTracking()
@@ -55,47 +56,47 @@ namespace ProAgil.Repository
             return await query.ToArrayAsync();
         }
 
-        //EVENTOS
-        public async Task<Evento?> GetEventoByIdAsync(int id, bool includePalestrantes)
+        // Events
+        public async Task<Event?> GetEventByIdAsync(int id, bool includeSpeakers)
         {
-            IQueryable<Evento> query = _context.Eventos
-                .Include(e => e.Lotes)
-                .Include(e => e.RedesSociais);
-            if (includePalestrantes)
-                query = query.Include(e => e.PalestrantesEventos).ThenInclude(p => p.Palestrante);
+            IQueryable<Event> query = _context.Events
+                .Include(e => e.Batches)
+                .Include(e => e.SocialNetworks);
+            if (includeSpeakers)
+                query = query.Include(e => e.SpeakerEvents).ThenInclude(p => p.Speaker);
 
             return await query.Where(e => e.Id == id).AsNoTracking().FirstOrDefaultAsync();
         }
 
-        public async Task<Evento[]> GetAllEventoAsyncByTema(string Tema, bool includePalestrantes)
+        public async Task<Event[]> GetAllEventsByThemeAsync(string theme, bool includeSpeakers)
         {
-            IQueryable<Evento> query = _context.Eventos
-                .Include(e => e.Lotes)
-                .Include(e => e.RedesSociais);
-            if (includePalestrantes)
-                query = query.Include(e => e.PalestrantesEventos).ThenInclude(p => p.Palestrante);
-            query = query.OrderByDescending(e => e.DataEvento)
-                .Where(e => e.Tema.ToLower().Contains(Tema.ToLower()));
+            IQueryable<Event> query = _context.Events
+                .Include(e => e.Batches)
+                .Include(e => e.SocialNetworks);
+            if (includeSpeakers)
+                query = query.Include(e => e.SpeakerEvents).ThenInclude(p => p.Speaker);
+            query = query.OrderByDescending(e => e.EventDate)
+                .Where(e => e.Theme.ToLower().Contains(theme.ToLower()));
             return await query.ToArrayAsync();
         }
 
-        //PALESTRANTES
-        public async Task<Palestrante?> GetPalestranteByIdAsync(int id, bool includeEvento = false)
+        // Speakers
+        public async Task<Speaker?> GetSpeakerByIdAsync(int id, bool includeEvents = false)
         {
-            IQueryable<Palestrante> query = _context.Palestrante.Where(p => p.Id == id)
-                .Include(p => p.RedesSociais);
-            if (includeEvento)
-                query = query.Include(p => p.PalestrantesEventos).ThenInclude(p => p.Evento);
+            IQueryable<Speaker> query = _context.Speakers.Where(p => p.Id == id)
+                .Include(p => p.SocialNetworks);
+            if (includeEvents)
+                query = query.Include(p => p.SpeakerEvents).ThenInclude(p => p.Event);
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<Palestrante[]> GetAllPalestrantesAsyncByName(string nome, bool includeEvento)
+        public async Task<Speaker[]> GetAllSpeakersByNameAsync(string name, bool includeEvents)
         {
-            IQueryable<Palestrante> query = _context.Palestrante
-                .Include(p => p.RedesSociais);
-            if (includeEvento)
-                query = query.Include(p => p.PalestrantesEventos).ThenInclude(p => p.Evento);
-            query = query.Where(p => p.Nome.ToLower().Contains(nome.ToLower()));
+            IQueryable<Speaker> query = _context.Speakers
+                .Include(p => p.SocialNetworks);
+            if (includeEvents)
+                query = query.Include(p => p.SpeakerEvents).ThenInclude(p => p.Event);
+            query = query.Where(p => p.Name.ToLower().Contains(name.ToLower()));
             return await query.ToArrayAsync();
         }
 
@@ -104,19 +105,19 @@ namespace ProAgil.Repository
             _context.RemoveRange(entityArray);
         }
 
-        public async Task<Palestrante[]> GetAllPalestrantesAsync(bool includeEvento)
+        public async Task<Speaker[]> GetAllSpeakersAsync(bool includeEvents)
         {
-            IQueryable<Palestrante> query = _context.Palestrante
-                .Include(p => p.RedesSociais);
-            if (includeEvento)
-                query = query.Include(p => p.PalestrantesEventos).ThenInclude(p => p.Evento);
+            IQueryable<Speaker> query = _context.Speakers
+                .Include(p => p.SocialNetworks);
+            if (includeEvents)
+                query = query.Include(p => p.SpeakerEvents).ThenInclude(p => p.Event);
             
             return await query.ToArrayAsync();
         }
 
-        public async Task<Evento[]> GetLatestEventos()
+        public async Task<Event[]> GetLatestEvents()
         {
-            return await _context.Eventos.AsNoTracking().OrderByDescending(c => c.Id).Take(5).ToArrayAsync();
+            return await _context.Events.AsNoTracking().OrderByDescending(c => c.Id).Take(5).ToArrayAsync();
         }
     }
 }

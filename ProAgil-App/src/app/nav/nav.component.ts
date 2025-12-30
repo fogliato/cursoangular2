@@ -22,7 +22,7 @@ export class NavComponent implements OnInit {
     this.router.navigate(['/user/login']);
   }
 
-  entrar() {
+  login() {
     this.router.navigate(['/user/login']);
   }
 

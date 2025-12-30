@@ -1,0 +1,45 @@
+<app-titulo [title]='title'></app-titulo>
+<form [formGroup]="registerForm">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>Full Name</label>
+            <input type="text"
+                   [ngClass]="{'is-invalid': registerForm.get('fullName').errors && registerForm.get('fullName').touched}"
+                   class="form-control"
+                   formControlName="fullName"
+                   placeholder="Enter full name">
+            <div *ngIf="registerForm.get('fullName').hasError('required') && registerForm.get('fullName').touched"
+                 class="invalid-feedback">Full name is required</div>
+            <div *ngIf="registerForm.get('fullName').hasError('minlength') && registerForm.get('fullName').touched"
+                 class="invalid-feedback">Full name must have at least 4 characters</div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>E-mail</label>
+            <input type="email"
+                   [ngClass]="{'is-invalid': registerForm.get('email').errors && registerForm.get('email').touched}"
+                   class="form-control"
+                   formControlName="email"
+                   placeholder="email@domain.com">
+            <div *ngIf="registerForm.get('email').hasError('required') && registerForm.get('email').touched"
+                 class="invalid-feedback">E-mail is required</div>
+            <div *ngIf="registerForm.get('email').hasError('email') && registerForm.get('email').touched"
+                 class="invalid-feedback">Enter a valid e-mail</div>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-10">
+            <label>Message</label>
+            <ckeditor [editor]="messageEditor" (change)="onChange($event)" ></ckeditor>
+        </div>
+    </div>
+</form>
+<div class="modal-footer">
+    <button class="btn btn-primary ml-auto"
+            [disabled]="!registerForm.valid"
+            (click)="executeContact()">
+        Send
+    </button>
+</div>
+

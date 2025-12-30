@@ -17,11 +17,11 @@ namespace ProAgil.Repository
 
         }
 
-        public DbSet<Evento> Eventos { get; set; }
-        public DbSet<Palestrante> Palestrante { get; set; }
-        public DbSet<PalestranteEvento> PalestranteEventos { get; set; }
-        public DbSet<Lote> Lotes { get; set; }
-        public DbSet<RedeSocial> RedesSociais { get; set; }
+        public DbSet<Event> Events { get; set; }
+        public DbSet<Speaker> Speakers { get; set; }
+        public DbSet<SpeakerEvent> SpeakerEvents { get; set; }
+        public DbSet<Batch> Batches { get; set; }
+        public DbSet<SocialNetwork> SocialNetworks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -43,8 +43,8 @@ namespace ProAgil.Repository
                 }
             );
 
-            modelBuilder.Entity<PalestranteEvento>()
-                .HasKey(PE => new { PE.EventoId, PE.PalestranteId });
+            modelBuilder.Entity<SpeakerEvent>()
+                .HasKey(SE => new { SE.EventId, SE.SpeakerId });
 
         }
 

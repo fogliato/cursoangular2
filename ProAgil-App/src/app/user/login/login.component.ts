@@ -41,12 +41,12 @@ export class LoginComponent implements OnInit {
     console.log('Login attempt:', this.model);
     this.authService.login(this.model).subscribe(
       (jwt: any) => {
-        this.toastr.success('Entrando no sistema', 'Sucesso!');
+        this.toastr.success('Logging in', 'Success!');
         this.router.navigate(['/dashboard']);
       },
       (error) => {
         console.error('Login error:', error);
-        this.toastr.error('Usuário ou senha inválidos', 'Erro ao logar');
+        this.toastr.error('Invalid username or password', 'Login Error');
       }
     );
   }

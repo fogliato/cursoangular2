@@ -19,8 +19,8 @@ A full-stack event management application built with **Angular 9** and **.NET 8 
 
 ProAgil is an event management system that allows users to:
 - Create, edit, and delete events
-- Manage speakers (palestrantes) and their associations with events
-- Handle event batches (lotes) and social media links
+- Manage speakers and their associations with events
+- Handle event batches and social media links
 - Upload images for events
 - User authentication with JWT tokens
 - AI-powered natural language API interaction (Agent)
@@ -105,11 +105,18 @@ cursoangular2/
 │
 ├── ProAgil.WebApi/                # API Layer
 │   ├── Controllers/
-│   │   ├── EventoController.cs    # Event CRUD operations
+│   │   ├── EventController.cs     # Event CRUD operations
 │   │   ├── UserController.cs      # Authentication (login/register)
-│   │   ├── PalestranteController.cs
-│   │   └── ContatoController.cs   # AI Agent endpoint
+│   │   ├── SpeakerController.cs   # Speaker CRUD operations
+│   │   ├── ContactController.cs   # Contact endpoint
+│   │   └── AgentController.cs     # AI Agent endpoint
 │   ├── Dtos/                      # Data Transfer Objects
+│   │   ├── EventDto.cs
+│   │   ├── SpeakerDto.cs
+│   │   ├── BatchDto.cs
+│   │   ├── SocialNetworkDto.cs
+│   │   ├── ContactDto.cs
+│   │   └── UserDto.cs
 │   ├── Mapper/                    # AutoMapper profiles
 │   ├── Properties/
 │   ├── Resources/Images/          # Uploaded images
@@ -118,11 +125,11 @@ cursoangular2/
 │   └── Program.cs                 # Entry point
 │
 ├── ProAgil.Domain/                # Domain Layer
-│   ├── Evento.cs                  # Event entity
-│   ├── Palestrante.cs             # Speaker entity
-│   ├── Lote.cs                    # Batch entity
-│   ├── RedeSocial.cs              # Social media entity
-│   ├── PalestranteEvento.cs       # Many-to-many relationship
+│   ├── Event.cs                   # Event entity
+│   ├── Speaker.cs                 # Speaker entity
+│   ├── Batch.cs                   # Batch entity
+│   ├── SocialNetwork.cs           # Social network entity
+│   ├── SpeakerEvent.cs            # Many-to-many relationship
 │   ├── Identity/                  # ASP.NET Identity models
 │   │   ├── User.cs
 │   │   ├── Role.cs
@@ -131,6 +138,8 @@ cursoangular2/
 │       ├── AgentService.cs        # Main orchestrator
 │       ├── GeminiApiService.cs    # Gemini API integration
 │       ├── ControllerInvoker.cs   # Dynamic controller invocation
+│       ├── MultiStepExecutor.cs   # Multi-step operations
+│       ├── AgentPrompts.cs        # AI prompts
 │       └── ...
 │
 ├── ProAgil.Repository/            # Data Layer
@@ -140,17 +149,32 @@ cursoangular2/
 │   └── Migrations/                # EF Core migrations
 │
 ├── ProAgil.Test/                  # Unit Tests
+│   └── EventControllerTest.cs     # Controller tests
 │
 └── ProAgil-App/                   # Angular Frontend
     └── src/app/
-        ├── eventos/               # Events module
-        ├── palestrantes/          # Speakers module
-        ├── contatos/              # AI Agent chat module
+        ├── events/                # Events module
+        │   ├── events.component.ts/html/css
+        │   └── eventEdit/         # Event edit component
+        ├── speakers/              # Speakers module
+        ├── contacts/              # Contacts module
         ├── dashboard/             # Dashboard module
         ├── user/                  # Login/Registration
+        │   ├── login/
+        │   └── registration/
         ├── auth/                  # Auth guard & interceptor
         ├── services/              # HTTP services
+        │   ├── event.service.ts
+        │   ├── speaker.service.ts
+        │   ├── contact.service.ts
+        │   └── auth.service.ts
         ├── models/                # TypeScript models
+        │   ├── Event.ts
+        │   ├── Speaker.ts
+        │   ├── Batch.ts
+        │   ├── SocialNetwork.ts
+        │   ├── Contact.ts
+        │   └── User.ts
         └── shared/                # Shared components
 ```
 
@@ -205,8 +229,8 @@ Or update the connection string in `ProAgil.WebApi/appsettings.json`:
 ```bash
 cd ProAgil.WebApi
 
-# Restore EF Core tools (first time only)
-dotnet tool restore
+# Create new migration (if needed)
+dotnet ef migrations add InitialCreate --project ../ProAgil.Repository
 
 # Apply migrations to create database tables
 dotnet ef database update --project ../ProAgil.Repository
@@ -252,28 +276,35 @@ The Angular app will be available at: http://localhost:4200
 ### Events
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/evento` | Get all events |
-| GET | `/api/evento/{id}` | Get event by ID |
-| GET | `/api/evento/getByTema/{tema}` | Search events by theme |
-| GET | `/api/evento/getLatestEventos` | Get latest events |
-| POST | `/api/evento` | Create new event |
-| PUT | `/api/evento/{id}` | Update event |
-| DELETE | `/api/evento/{id}` | Delete event |
-| POST | `/api/evento/upload` | Upload event image |
+| GET | `/api/event` | Get all events |
+| GET | `/api/event/{id}` | Get event by ID |
+| GET | `/api/event/getByTheme/{theme}` | Search events by theme |
+| GET | `/api/event/getLatestEvents` | Get latest events |
+| POST | `/api/event` | Create new event |
+| PUT | `/api/event/{id}` | Update event |
+| PUT | `/api/event/simpleUpdate/{id}` | Simple update event |
+| DELETE | `/api/event/{id}` | Delete event |
+| POST | `/api/event/upload` | Upload event image |
 
 ### Speakers
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/palestrante` | Get all speakers |
-| GET | `/api/palestrante/{id}` | Get speaker by ID |
-| POST | `/api/palestrante` | Create new speaker |
-| PUT | `/api/palestrante/{id}` | Update speaker |
-| DELETE | `/api/palestrante/{id}` | Delete speaker |
+| GET | `/api/speaker` | Get all speakers |
+| GET | `/api/speaker/{id}` | Get speaker by ID |
+| GET | `/api/speaker/getByName/{name}` | Search speakers by name |
+| POST | `/api/speaker` | Create new speaker |
+| PUT | `/api/speaker/{id}` | Update speaker |
+| DELETE | `/api/speaker/{id}` | Delete speaker |
+
+### Contacts
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/contact` | Send contact message |
 
 ### AI Agent
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/api/contato` | Send natural language message to AI agent |
+| POST | `/api/agent` | Send natural language message to AI agent |
 
 ---
 
@@ -288,15 +319,72 @@ The Angular app will be available at: http://localhost:4200
 ### Event Management
 - Full CRUD operations for events
 - Image upload functionality
-- Batch (lote) management per event
+- Batch management per event
 - Social media links per event
 - Speaker associations
+
+### Speaker Management
+- Full CRUD operations for speakers
+- Image upload functionality
+- Short bio with rich text editor
+- Event associations
 
 ### AI Agent (Experimental)
 - Natural language processing using Google Gemini
 - Automatic API endpoint identification
 - Multi-step operation execution
 - Dynamic parameter extraction
+
+---
+
+## Database Entities
+
+### Event
+| Property | Type | Description |
+|----------|------|-------------|
+| Id | int | Primary key |
+| Location | string | Event location |
+| EventDate | DateTime | Event date and time |
+| Theme | string | Event theme/title |
+| PeopleCount | int | Number of attendees |
+| ImageUrl | string | Event image URL |
+| Phone | string | Contact phone |
+| Email | string | Contact email |
+| Batches | List<Batch> | Event batches |
+| SocialNetworks | List<SocialNetwork> | Social media links |
+| SpeakerEvents | List<SpeakerEvent> | Associated speakers |
+
+### Speaker
+| Property | Type | Description |
+|----------|------|-------------|
+| Id | int | Primary key |
+| Name | string | Speaker name |
+| ShortBio | string | Short biography |
+| ImageUrl | string | Speaker image URL |
+| Phone | string | Contact phone |
+| Email | string | Contact email |
+| SocialNetworks | List<SocialNetwork> | Social media links |
+| SpeakerEvents | List<SpeakerEvent> | Associated events |
+
+### Batch
+| Property | Type | Description |
+|----------|------|-------------|
+| Id | int | Primary key |
+| Name | string | Batch name |
+| Price | decimal | Ticket price |
+| StartDate | DateTime | Sale start date |
+| EndDate | DateTime | Sale end date |
+| Quantity | int | Available tickets |
+| EventId | int | Associated event |
+
+### SocialNetwork
+| Property | Type | Description |
+|----------|------|-------------|
+| Id | int | Primary key |
+| Name | string | Network name |
+| URL | string | Profile URL |
+| EventId | int? | Associated event |
+| SpeakerId | int? | Associated speaker |
 
 ---
 
@@ -324,6 +412,18 @@ dotnet ef database update --project ../ProAgil.Repository
 ```bash
 cd ProAgil.Test
 dotnet test
+```
+
+### Building for Production
+
+```bash
+# Backend
+cd ProAgil.WebApi
+dotnet publish -c Release
+
+# Frontend
+cd ProAgil-App
+ng build --prod
 ```
 
 ---

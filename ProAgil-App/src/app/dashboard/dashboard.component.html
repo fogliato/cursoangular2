@@ -8,16 +8,16 @@
                     <span class="mbr-iconfont fa-volume-up fa"></span>
                 </div>
                 <div class="text-wrap vcenter">
-                    <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Últimos eventos</h2>
+                    <h2 class="mbr-fonts-style mbr-bold mbr-section-title3 display-5">Latest Events</h2>
                     <div class="mbr-fonts-style text1 mbr-text display-6">
-                        <ul *ngIf="eventos && eventos.length">
-                            <li *ngFor="let evento of eventos">
-                                {{evento.tema}} --> {{evento.dataEvento | DateTimeFormatPipe}}
+                        <ul *ngIf="events && events.length">
+                            <li *ngFor="let event of events">
+                                {{event.theme}} --> {{event.eventDate | DateTimeFormatPipe}}
                             </li>
                         </ul>
-                        <div *ngIf="eventos && !eventos.length">
+                        <div *ngIf="events && !events.length">
                             <h4>
-                                Nenhum evento encontrado
+                                No events found
                             </h4>
                         </div>
                     </div>

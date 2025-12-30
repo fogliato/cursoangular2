@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { EventoService } from '../services/evento.service';
-import { Evento } from '../models/Evento';
+import { EventService } from '../services/event.service';
+import { Event } from '../models/Event';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -9,27 +9,26 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  title = 'Início';
-  eventos: Evento[];
+  title = 'Home';
+  events: Event[];
   constructor(
-    private eventoService: EventoService,
+    private eventService: EventService,
     private toastr: ToastrService
   ) { }
 
   ngOnInit(): void {
-    this.getEventos();
+    this.getEvents();
   }
 
-  getEventos() {
-    this.eventoService.getLatestEventos().subscribe(
-      (eventosParam: Evento[]) => {
-        this.eventos = eventosParam;
+  getEvents() {
+    this.eventService.getLatestEvents().subscribe(
+      (eventsParam: Event[]) => {
+        this.events = eventsParam;
       },
-      // tslint:disable-next-line: no-shadowed-variable
       (error) => {
         this.toastr.error(
-          `Falha ao carregar registros. Mensagem: ${error}`,
-          'Erro'
+          `Failed to load records. Message: ${error}`,
+          'Error'
         );
       }
     );

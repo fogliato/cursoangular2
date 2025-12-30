@@ -6,7 +6,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 namespace ProAgil.Domain.Agent
 {
     /// <summary>
-    /// Serviço responsável por executar operações multi-etapa e transformação de dados
+    /// Service responsible for executing multi-step operations and data transformation
     /// </summary>
     public class MultiStepExecutor
     {
@@ -83,7 +83,7 @@ namespace ProAgil.Domain.Agent
             catch (Exception ex)
             {
                 Console.WriteLine(
-                    $"[MultiStepExecutor] Erro ao analisar plano de execução: {ex.Message}"
+                    $"[MultiStepExecutor] Error analyzing execution plan: {ex.Message}"
                 );
                 return new ExecutionPlan { IsMultiStep = false };
             }
@@ -97,7 +97,7 @@ namespace ProAgil.Domain.Agent
             foreach (var step in plan.Steps.OrderBy(s => s.Order))
             {
                 Console.WriteLine(
-                    $"[MultiStepExecutor] Executando passo {step.Order}: {step.Description}"
+                    $"[MultiStepExecutor] Executing step {step.Order}: {step.Description}"
                 );
 
                 try
@@ -113,14 +113,14 @@ namespace ProAgil.Domain.Agent
                     dynamic dynResult = stepResult;
                     previousStepData = dynResult.data;
 
-                    // Verificar se o passo falhou (success = false)
-                    // O ExecuteSingleStep agora retorna success=false se a API retornar erro
+                    // Check if the step failed (success = false)
+                    // ExecuteSingleStep now returns success=false if the API returns an error
                     if (dynResult.success == false)
                     {
                         return new
                         {
                             success = false,
-                            message = $"Falha no passo {step.Order}: {step.Description}. Detalhes: {dynResult.message ?? "Erro desconhecido"}",
+                            message = $"Failure in step {step.Order}: {step.Description}. Details: {dynResult.message ?? "Unknown error"}",
                             results,
                         };
                     }
@@ -130,7 +130,7 @@ namespace ProAgil.Domain.Agent
                     return new
                     {
                         success = false,
-                        message = $"Erro no passo {step.Order}: {ex.Message}",
+                        message = $"Error in step {step.Order}: {ex.Message}",
                         results,
                     };
                 }
@@ -139,8 +139,8 @@ namespace ProAgil.Domain.Agent
             return new
             {
                 success = true,
-                message = $"Operação multi-etapa concluída com sucesso ({plan.Steps.Count} passos)",
-                data = previousStepData, // Retornar apenas o resultado final
+                message = $"Multi-step operation completed successfully ({plan.Steps.Count} steps)",
+                data = previousStepData, // Return only the final result
                 totalSteps = plan.Steps.Count,
             };
         }
@@ -151,21 +151,21 @@ namespace ProAgil.Domain.Agent
             string userMessage
         )
         {
-            Console.WriteLine($"[MultiStepExecutor] Executando {step.Controller}.{step.Action}");
+            Console.WriteLine($"[MultiStepExecutor] Executing {step.Controller}.{step.Action}");
 
-            // Se for transformação de dados, processar localmente
+            // If it's data transformation, process locally
             if (step.Action == "TRANSFORM_DATA")
             {
                 return await TransformData(step, previousStepData, userMessage);
             }
 
-            // Encontrar o controller e método
+            // Find the controller and method
             var (controllerType, method) = _controllerInvoker.FindControllerAndMethod(
                 step.Controller ?? string.Empty,
                 step.Action ?? string.Empty
             );
 
-            // Extrair parâmetros
+            // Extract parameters
             var parameters = method.GetParameters();
             var methodParams = new object[parameters.Length];
 
@@ -196,21 +196,21 @@ namespace ProAgil.Domain.Agent
             try
             {
                 Console.WriteLine(
-                    $"[MultiStepExecutor] Parâmetros para {step.Controller}.{step.Action}: {JsonHelper.Serialize(methodParams)}"
+                    $"[MultiStepExecutor] Parameters for {step.Controller}.{step.Action}: {JsonHelper.Serialize(methodParams)}"
                 );
             }
             catch
             { /* ignore serialization errors in logs */
             }
 
-            // Executar o método
+            // Execute the method
             var result = await _controllerInvoker.InvokeController(
                 step.Controller ?? string.Empty,
                 step.Action ?? string.Empty,
                 methodParams
             );
 
-            // Verificar se o resultado da API indica falha (IResponseMessage.Success)
+            // Check if the API result indicates failure (IResponseMessage.Success)
             bool apiSuccess = true;
             string? apiMessage = null;
 
@@ -228,7 +228,7 @@ namespace ProAgil.Domain.Agent
                     if (!successVal)
                     {
                         apiSuccess = false;
-                        // Tentar extrair mensagem de erro
+                        // Try to extract error message
                         var propMessages = result
                             .GetType()
                             .GetProperty(
@@ -248,13 +248,13 @@ namespace ProAgil.Domain.Agent
             if (!apiSuccess)
             {
                 Console.WriteLine(
-                    $"[MultiStepExecutor] Passo falhou. Mensagem da API: {apiMessage}"
+                    $"[MultiStepExecutor] Step failed. API message: {apiMessage}"
                 );
                 return new
                 {
                     success = false,
                     data = result,
-                    message = apiMessage ?? "API retornou insucesso",
+                    message = apiMessage ?? "API returned failure",
                     controller = step.Controller,
                     action = step.Action,
                     step = step.Description,
@@ -277,16 +277,16 @@ namespace ProAgil.Domain.Agent
             string userMessage
         )
         {
-            Console.WriteLine($"[MultiStepExecutor] Transformando dados: {step.Transformation}");
+            Console.WriteLine($"[MultiStepExecutor] Transforming data: {step.Transformation}");
 
-            // Verificar se previousStepData é nulo ou inválido
+            // Check if previousStepData is null or invalid
             if (previousStepData == null)
             {
-                Console.WriteLine("[MultiStepExecutor] ERRO: Dados do passo anterior são nulos.");
+                Console.WriteLine("[MultiStepExecutor] ERROR: Previous step data is null.");
                 return new
                 {
                     success = false,
-                    message = "Dados do passo anterior são nulos. Verifique se a etapa anterior foi executada corretamente.",
+                    message = "Previous step data is null. Check if the previous step was executed correctly.",
                     step = step.Description,
                 };
             }
@@ -296,47 +296,47 @@ namespace ProAgil.Domain.Agent
 
             string dataToTransform = previousDataJson;
             
-            // Se for um array, pegar o primeiro elemento para transformação
+            // If it's an array, get the first element for transformation
             if (previousElement.ValueKind == JsonValueKind.Array)
             {
-                Console.WriteLine("[MultiStepExecutor] Dados do passo anterior são um array.");
+                Console.WriteLine("[MultiStepExecutor] Previous step data is an array.");
                 if (previousElement.GetArrayLength() > 0)
                 {
                     var firstElement = previousElement[0];
                     dataToTransform = JsonHelper.Serialize(firstElement);
-                    Console.WriteLine($"[MultiStepExecutor] Usando primeiro elemento do array para transformação.");
+                    Console.WriteLine($"[MultiStepExecutor] Using first element of array for transformation.");
                 }
                 else
                 {
-                    Console.WriteLine("[MultiStepExecutor] ERRO: Array do passo anterior está vazio.");
+                    Console.WriteLine("[MultiStepExecutor] ERROR: Previous step array is empty.");
                     return new
                     {
                         success = false,
-                        message = "Array do passo anterior está vazio.",
+                        message = "Previous step array is empty.",
                         step = step.Description,
                     };
                 }
             }
             else if (previousElement.TryGetProperty("data", out JsonElement dataElement))
             {
-                // Se 'data' for null dentro do objeto de resposta
+                // If 'data' is null within the response object
                 if (dataElement.ValueKind == JsonValueKind.Null)
                 {
                     Console.WriteLine(
-                        "[MultiStepExecutor] ERRO: Propriedade 'data' do passo anterior é nula."
+                        "[MultiStepExecutor] ERROR: 'data' property from previous step is null."
                     );
                     return new
                     {
                         success = false,
-                        message = "Nenhum dado retornado na etapa anterior para ser processado.",
+                        message = "No data returned in previous step to be processed.",
                         step = step.Description,
                     };
                 }
                 
-                // Se 'data' for um array, pegar o primeiro elemento
+                // If 'data' is an array, get the first element
                 if (dataElement.ValueKind == JsonValueKind.Array && dataElement.GetArrayLength() > 0)
                 {
-                    Console.WriteLine("[MultiStepExecutor] Propriedade 'data' é um array, usando primeiro elemento.");
+                    Console.WriteLine("[MultiStepExecutor] 'data' property is an array, using first element.");
                     dataToTransform = JsonHelper.Serialize(dataElement[0]);
                 }
                 else
@@ -345,7 +345,7 @@ namespace ProAgil.Domain.Agent
                 }
             }
 
-            // Usar prompt melhorado que inclui a mensagem do usuário para verificação
+            // Use improved prompt that includes user message for verification
             var transformPrompt = AgentPrompts.BuildDataTransformationPrompt(
                 dataToTransform,
                 step.Transformation ?? string.Empty,
@@ -359,20 +359,20 @@ namespace ProAgil.Domain.Agent
             var transformedJson = JsonHelper.CleanJsonResponse(result.Content?.Trim());
 
             Console.WriteLine(
-                $"[MultiStepExecutor] Dados transformados (primeiros 500 chars): {transformedJson.Substring(0, Math.Min(500, transformedJson.Length))}"
+                $"[MultiStepExecutor] Transformed data (first 500 chars): {transformedJson.Substring(0, Math.Min(500, transformedJson.Length))}"
             );
 
-            // Verificar se o resultado é um array
+            // Check if the result is an array
             var transformedData = JsonHelper.DeserializeToElement(transformedJson);
             bool isArray = transformedData.ValueKind == JsonValueKind.Array;
             Console.WriteLine(
-                $"[MultiStepExecutor] Tipo de resultado: {(isArray ? "Array" : "Object")}"
+                $"[MultiStepExecutor] Result type: {(isArray ? "Array" : "Object")}"
             );
 
-            // Converter JsonElement para objetos CLR padrão (List/Dictionary) para garantir serialização correta
+            // Convert JsonElement to standard CLR objects (List/Dictionary) to ensure correct serialization
             var cleanData = JsonHelper.ConvertJsonElement(transformedData);
 
-            // Se for array, retornar a lista
+            // If it's an array, return the list
             if (isArray)
             {
                 return new
@@ -386,7 +386,7 @@ namespace ProAgil.Domain.Agent
                 };
             }
 
-            // Validar que não contém RPs (apenas para objetos únicos)
+            // Validate that it doesn't contain RPs (only for single objects)
             if (
                 transformedData.TryGetProperty("rPs", out _)
                 || transformedData.TryGetProperty("RPs", out _)
@@ -394,12 +394,12 @@ namespace ProAgil.Domain.Agent
             )
             {
                 Console.WriteLine(
-                    "[MultiStepExecutor] AVISO: JSON transformado contém RPs, removendo..."
+                    "[MultiStepExecutor] WARNING: Transformed JSON contains RPs, removing..."
                 );
 
                 transformedJson = JsonHelper.Serialize(cleanData);
                 Console.WriteLine(
-                    $"[MultiStepExecutor] JSON limpo (primeiros 500 chars): {transformedJson.Substring(0, Math.Min(500, transformedJson.Length))}"
+                    $"[MultiStepExecutor] Clean JSON (first 500 chars): {transformedJson.Substring(0, Math.Min(500, transformedJson.Length))}"
                 );
             }
 
@@ -407,7 +407,7 @@ namespace ProAgil.Domain.Agent
             {
                 success = true,
                 data = cleanData,
-                dataType = "PedidoNewModel",
+                dataType = "EventNewModel",
                 transformation = step.Transformation,
                 step = step.Description,
             };

@@ -51,7 +51,7 @@ namespace ProAgil.WebApi.Controllers
         {
             try
             {
-                Console.WriteLine("Inserindo novo usuário");
+                Console.WriteLine("Inserting new user");
                 var user = _mapper.Map<User>(dtoUser);
                 var result = await _userManager.CreateAsync(user, dtoUser.Password);
                 var userToReturn = _mapper.Map<UserDto>(user);
@@ -66,7 +66,7 @@ namespace ProAgil.WebApi.Controllers
             {
                 return this.StatusCode(
                     StatusCodes.Status500InternalServerError,
-                    $"Falha na conexão com o banco de dados: {ex.Message}"
+                    $"Database connection failed: {ex.Message}"
                 );
             }
         }
@@ -102,7 +102,7 @@ namespace ProAgil.WebApi.Controllers
             {
                 return this.StatusCode(
                     StatusCodes.Status500InternalServerError,
-                    $"Falha na conexão com o banco de dados: {ex.Message}"
+                    $"Database connection failed: {ex.Message}"
                 );
             }
         }

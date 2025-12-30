@@ -3,27 +3,27 @@ using AutoMapper;
 using ProAgil.Domain;
 using ProAgil.Domain.Identity;
 using ProAgil.WebApi.Dtos;
+
 namespace ProAgil.WebApi.Mapper
 {
-    public class MaperProfile : Profile
+    public class MapperProfile : Profile
     {
-        public MaperProfile()
+        public MapperProfile()
         {
-            CreateMap<Evento, EventoDto>()
-                .ForMember(dto => dto.Palestrantes, opt =>
+            CreateMap<Event, EventDto>()
+                .ForMember(dto => dto.Speakers, opt =>
                 {
-                    opt.MapFrom(src => src.PalestrantesEventos.Select(x => x.Palestrante).ToList());
+                    opt.MapFrom(src => src.SpeakerEvents.Select(x => x.Speaker).ToList());
                 }).ReverseMap();
-            CreateMap<Palestrante, PalestranteDto>()
-                .ForMember(dto => dto.Eventos, opt =>
+            CreateMap<Speaker, SpeakerDto>()
+                .ForMember(dto => dto.Events, opt =>
                 {
-                    opt.MapFrom(src => src.PalestrantesEventos.Select(x => x.Evento).ToList());
+                    opt.MapFrom(src => src.SpeakerEvents.Select(x => x.Event).ToList());
                 }).ReverseMap();
-            CreateMap<Lote, LoteDto>().ReverseMap();
-            CreateMap<RedeSocial, RedeSocialDto>().ReverseMap();
+            CreateMap<Batch, BatchDto>().ReverseMap();
+            CreateMap<SocialNetwork, SocialNetworkDto>().ReverseMap();
             CreateMap<User, UserDto>().ReverseMap();
             CreateMap<User, UserLoginDto>().ReverseMap();
         }
-
     }
 }

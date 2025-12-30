@@ -33,50 +33,50 @@ export class RegistrationComponent implements OnInit {
           password: ['', [Validators.required, Validators.minLength(4)]],
           confirmPassword: ['', Validators.required],
         },
-        { validator: this.compararSenhas }
+        { validator: this.comparePasswords }
       ),
     });
   }
 
-  compararSenhas(fb: FormGroup) {
-    const confirmSenhaCtrl = fb.get('confirmPassword');
+  comparePasswords(fb: FormGroup) {
+    const confirmPasswordCtrl = fb.get('confirmPassword');
     if (
-      confirmSenhaCtrl.errors == null ||
-      'mismatch' in confirmSenhaCtrl.errors
+      confirmPasswordCtrl.errors == null ||
+      'mismatch' in confirmPasswordCtrl.errors
     ) {
-      if (fb.get('password').value !== confirmSenhaCtrl.value) {
-        confirmSenhaCtrl.setErrors({ mismatch: true });
+      if (fb.get('password').value !== confirmPasswordCtrl.value) {
+        confirmPasswordCtrl.setErrors({ mismatch: true });
       } else {
-        confirmSenhaCtrl.setErrors(null);
+        confirmPasswordCtrl.setErrors(null);
       }
     }
   }
 
-  cadastrarUsuario() {
+  registerUser() {
     if (this.registerForm.valid) {
       this.user = Object.assign(
         { password: this.registerForm.get('passwords.password').value },
         this.registerForm.value
       );
       this.authService.register(this.user).subscribe(
-        (novo: User) => {
+        (newUser: User) => {
           this.toastr.success(
-            'Novo usuário registrado com sucesso',
-            'Sucesso!'
+            'New user registered successfully',
+            'Success!'
           );
           this.registerForm.reset();
         },
         (error) => {
-          const erro = error.error;
-          erro.forEach((element) => {
+          const err = error.error;
+          err.forEach((element) => {
             switch (element.code) {
               case 'DuplicateUserName':
-                this.toastr.error('Já existe o usuário informado');
+                this.toastr.error('Username already exists');
                 break;
               default:
                 this.toastr.error(
-                  `Codigo do erro: ${element.code}`,
-                  'Erro no cadastro'
+                  `Error code: ${element.code}`,
+                  'Registration Error'
                 );
                 break;
             }

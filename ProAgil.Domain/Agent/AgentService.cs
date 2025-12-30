@@ -11,8 +11,8 @@ namespace ProAgil.Domain.Agent
     }
 
     /// <summary>
-    /// Serviço principal que coordena o processamento de mensagens usando IA
-    /// para identificar e executar ações em controllers
+    /// Main service that coordinates message processing using AI
+    /// to identify and execute actions on controllers
     /// </summary>
     public class AgentService : IAgentService
     {
@@ -43,9 +43,9 @@ namespace ProAgil.Domain.Agent
                 geminiModel = "gemini-2.5-flash";
             }
 
-            Console.WriteLine($"[AgentService] Inicializando com modelo: {geminiModel}");
+            Console.WriteLine($"[AgentService] Initializing with model: {geminiModel}");
             Console.WriteLine(
-                $"[AgentService] API Key configurada: {!string.IsNullOrEmpty(geminiApiKey)}"
+                $"[AgentService] API Key configured: {!string.IsNullOrEmpty(geminiApiKey)}"
             );
 
             var builder = Kernel.CreateBuilder();
@@ -54,7 +54,7 @@ namespace ProAgil.Domain.Agent
             var kernel = builder.Build();
             _chatService = kernel.GetRequiredService<IChatCompletionService>();
 
-            // Inicializar serviços especializados
+            // Initialize specialized services
             _apiDocumentationService = new ApiDocumentationService(apiExplorer);
             _geminiService = new GeminiApiService();
             _parameterExtraction = new ParameterExtractionService();
@@ -71,32 +71,32 @@ namespace ProAgil.Domain.Agent
         {
             try
             {
-                Console.WriteLine($"[AgentService] Processando mensagem: {message}");
+                Console.WriteLine($"[AgentService] Processing message: {message}");
 
-                // Gerar documentação da API
+                // Generate API documentation
                 var apiDocumentation = _apiDocumentationService.GenerateApiDocumentation();
 
-                // Verificar se é uma operação multi-etapa
+                // Check if it's a multi-step operation
                 var executionPlan = await _multiStepExecutor.AnalyzeExecutionPlan(message);
 
                 if (executionPlan.IsMultiStep)
                 {
                     Console.WriteLine(
-                        $"[AgentService] Detectada operação multi-etapa com {executionPlan.Steps.Count} passos"
+                        $"[AgentService] Multi-step operation detected with {executionPlan.Steps.Count} steps"
                     );
                     return await _multiStepExecutor.ExecuteMultiStepOperation(executionPlan);
                 }
 
-                // Operação simples - executar em uma única etapa
+                // Simple operation - execute in a single step
                 return await ExecuteSingleOperation(message, apiDocumentation);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[AgentService] Erro ao processar mensagem: {ex.Message}");
+                Console.WriteLine($"[AgentService] Error processing message: {ex.Message}");
                 return new
                 {
                     success = false,
-                    message = $"Erro ao processar: {ex.Message}",
+                    message = $"Error processing: {ex.Message}",
                     stackTrace = ex.StackTrace,
                 };
             }
@@ -104,8 +104,8 @@ namespace ProAgil.Domain.Agent
 
         private async Task<object> ExecuteSingleOperation(string message, string apiDocumentation)
         {
-            // Etapa 1: Identificar controller e action
-            Console.WriteLine($"[AgentService] Identificando controller e action...");
+            // Step 1: Identify controller and action
+            Console.WriteLine($"[AgentService] Identifying controller and action...");
             var identificationPrompt = AgentPrompts.BuildIdentificationPrompt(
                 apiDocumentation,
                 message
@@ -122,7 +122,7 @@ namespace ProAgil.Domain.Agent
                 return new
                 {
                     success = false,
-                    message = "Não foi possível identificar a ação a executar.",
+                    message = "Could not identify the action to execute.",
                 };
             }
 
@@ -132,20 +132,20 @@ namespace ProAgil.Domain.Agent
                 return new
                 {
                     success = false,
-                    message = $"Formato inválido: {controllerActionString}",
+                    message = $"Invalid format: {controllerActionString}",
                 };
             }
 
             var controllerName = parts[0];
             var actionName = parts[1];
 
-            // Etapa 2: Encontrar o método
+            // Step 2: Find the method
             var (_, method) = _controllerInvoker.FindControllerAndMethod(
                 controllerName,
                 actionName
             );
 
-            // Etapa 3: Extrair parâmetros
+            // Step 3: Extract parameters
             var parameters = method.GetParameters();
             var methodParams = await _parameterExtraction.ExtractMethodParameters(
                 message,
@@ -155,14 +155,14 @@ namespace ProAgil.Domain.Agent
                 _chatService
             );
 
-            // Etapa 4: Executar o método
+            // Step 4: Execute the method
             var result = await _controllerInvoker.InvokeController(
                 controllerName,
                 actionName,
                 methodParams
             );
 
-            // Etapa 5: Retornar resultado
+            // Step 5: Return result
             return new
             {
                 success = true,

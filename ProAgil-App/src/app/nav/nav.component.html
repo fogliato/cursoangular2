@@ -19,19 +19,19 @@
                 <li class="nav-item active"
                     routerLinkActive="active">
                     <a class="nav-link"
-                       routerLink="eventos">Eventos <span class="sr-only">(current)</span></a>
+                       routerLink="events">Events <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item"
                     routerLinkActive="active">
                     <a class="nav-link"
-                       routerLink="palestrantes">Palestrantes</a>
+                       routerLink="speakers">Speakers</a>
                 </li>
                 <li class="nav-item"
                     routerLinkActive="active">
                     <a class="nav-link"
-                       routerLink="contatos"
+                       routerLink="contacts"
                        tabindex="-1"
-                       aria-disabled="true">Contatos</a>
+                       aria-disabled="true">Contacts</a>
                 </li>
             </ul>
         </div>
@@ -54,20 +54,20 @@
                      aria-labelledby="navbarDropdownMenuLink">
                     <a class="dropdown-item cursor-pointer "
                        href="#">
-                        Perfil
+                        Profile
                     </a>
                     <div role="separator"
                          class="divider"></div>
                     <a class="dropdown-item cursor-pointer "
                        (click)="logOut()">
-                        Sair
+                        Logout
                     </a>
                 </div>
             </li>
         </ul>
         <button class="btn btn-success"
-                (click)="entrar()"
-                *ngIf="!loggedIn()">Entrar</button>
+                (click)="login()"
+                *ngIf="!loggedIn()">Login</button>
     </div>
 
 </nav>
