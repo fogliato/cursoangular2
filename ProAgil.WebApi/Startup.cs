@@ -1,27 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using ProAgil.Domain.Agent;
 using ProAgil.Domain.Identity;
 using ProAgil.Repository;
 
@@ -92,6 +77,7 @@ namespace ProAgil.WebApi
                 });
 
             services.AddScoped<IProAgilRepository, ProAgilRepository>();
+            services.AddScoped<IAgentService, AgentService>();
             services.AddAutoMapper(typeof(Startup));
             services.AddCors();
             services.AddControllers();
