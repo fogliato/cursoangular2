@@ -295,7 +295,29 @@ namespace ProAgil.Domain.Agent
             var previousElement = JsonHelper.DeserializeToElement(previousDataJson);
 
             string dataToTransform = previousDataJson;
-            if (previousElement.TryGetProperty("data", out JsonElement dataElement))
+            
+            // Se for um array, pegar o primeiro elemento para transformação
+            if (previousElement.ValueKind == JsonValueKind.Array)
+            {
+                Console.WriteLine("[MultiStepExecutor] Dados do passo anterior são um array.");
+                if (previousElement.GetArrayLength() > 0)
+                {
+                    var firstElement = previousElement[0];
+                    dataToTransform = JsonHelper.Serialize(firstElement);
+                    Console.WriteLine($"[MultiStepExecutor] Usando primeiro elemento do array para transformação.");
+                }
+                else
+                {
+                    Console.WriteLine("[MultiStepExecutor] ERRO: Array do passo anterior está vazio.");
+                    return new
+                    {
+                        success = false,
+                        message = "Array do passo anterior está vazio.",
+                        step = step.Description,
+                    };
+                }
+            }
+            else if (previousElement.TryGetProperty("data", out JsonElement dataElement))
             {
                 // Se 'data' for null dentro do objeto de resposta
                 if (dataElement.ValueKind == JsonValueKind.Null)
@@ -310,7 +332,17 @@ namespace ProAgil.Domain.Agent
                         step = step.Description,
                     };
                 }
-                dataToTransform = JsonHelper.Serialize(dataElement);
+                
+                // Se 'data' for um array, pegar o primeiro elemento
+                if (dataElement.ValueKind == JsonValueKind.Array && dataElement.GetArrayLength() > 0)
+                {
+                    Console.WriteLine("[MultiStepExecutor] Propriedade 'data' é um array, usando primeiro elemento.");
+                    dataToTransform = JsonHelper.Serialize(dataElement[0]);
+                }
+                else
+                {
+                    dataToTransform = JsonHelper.Serialize(dataElement);
+                }
             }
 
             // Usar prompt melhorado que inclui a mensagem do usuário para verificação

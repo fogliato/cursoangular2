@@ -3,10 +3,12 @@ using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using ProAgil.Domain.Agent;
 using ProAgil.Domain.Identity;
 using ProAgil.Repository;
 
@@ -68,6 +70,13 @@ builder
 // AutoMapper configuration
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IProAgilRepository, ProAgilRepository>();
+
+// Agent Service registration
+builder.Services.AddScoped<IAgentService>(sp =>
+{
+    var apiExplorer = sp.GetRequiredService<IApiDescriptionGroupCollectionProvider>();
+    return new AgentService(sp, apiExplorer);
+});
 
 // Swagger configuration
 builder.Services.AddSwaggerGen(c =>

@@ -40,7 +40,7 @@ namespace ProAgil.Domain.Agent
                 ? controllerName
                 : controllerName + "Controller";
 
-            var webApiAssembly = Assembly.Load("Globo.Giro.UI.WebApi");
+            var webApiAssembly = Assembly.Load("ProAgil.WebApi");
             var controllerType = webApiAssembly
                 .GetTypes()
                 .FirstOrDefault(t =>

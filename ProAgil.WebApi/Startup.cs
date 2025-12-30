@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -77,10 +78,17 @@ namespace ProAgil.WebApi
                 });
 
             services.AddScoped<IProAgilRepository, ProAgilRepository>();
-            services.AddScoped<IAgentService, AgentService>();
             services.AddAutoMapper(typeof(Startup));
             services.AddCors();
             services.AddControllers();
+            services.AddEndpointsApiExplorer();
+
+            // Registrar AgentService usando factory para resolver dependências corretamente
+            services.AddScoped<IAgentService>(sp =>
+            {
+                var apiExplorer = sp.GetRequiredService<IApiDescriptionGroupCollectionProvider>();
+                return new AgentService(sp, apiExplorer);
+            });
 
             // Adicionar a configuração do Swagger
             services.AddSwaggerGen(c =>
