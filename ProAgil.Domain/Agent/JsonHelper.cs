@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace ProAgil.Domain.Agent
 {
     /// <summary>
-    /// Utilitários para manipulação de JSON
+    /// Utilities for JSON manipulation
     /// </summary>
     public static class JsonHelper
     {

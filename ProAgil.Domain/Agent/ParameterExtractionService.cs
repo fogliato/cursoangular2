@@ -6,7 +6,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 namespace ProAgil.Domain.Agent
 {
     /// <summary>
-    /// Serviço responsável por extrair parâmetros de mensagens usando IA
+    /// Service responsible for extracting parameters from messages using AI
     /// </summary>
     public class ParameterExtractionService
     {
@@ -87,32 +87,32 @@ namespace ProAgil.Domain.Agent
             var previousDataJson = JsonHelper.Serialize(previousStepData);
 
             Console.WriteLine(
-                $"[ParameterExtractionService] Construindo parâmetros para {targetType.Name} a partir de dados anteriores"
+                $"[ParameterExtractionService] Building parameters for {targetType.Name} from previous step data"
             );
 
-            // Se os dados já vieram transformados (de TRANSFORM_DATA), usar direto
+            // If data was already transformed (from TRANSFORM_DATA), use it directly
             var previousElement = JsonHelper.DeserializeToElement(previousDataJson);
             if (previousElement.TryGetProperty("data", out var dataElement))
             {
                 var dataJson = JsonHelper.Serialize(dataElement);
-                Console.WriteLine($"[ParameterExtractionService] Usando dados já transformados");
+                Console.WriteLine($"[ParameterExtractionService] Using already transformed data");
                 Console.WriteLine(
                     $"[ParameterExtractionService] JSON sendo deserializado: {dataJson.Substring(0, Math.Min(500, dataJson.Length))}"
                 );
 
-                // CRÍTICO: Usar opções de serialização que preservam camelCase e propriedades
+                // CRITICAL: Use serialization options that preserve camelCase and properties
                 var options = new JsonSerializerOptions
                 {
-                    PropertyNameCaseInsensitive = true, // Permite camelCase -> PascalCase
+                    PropertyNameCaseInsensitive = true, // Allows camelCase -> PascalCase
                     WriteIndented = false,
                 };
 
                 var deserializedResult = JsonSerializer.Deserialize(dataJson, targetType, options);
                 Console.WriteLine(
-                    $"[ParameterExtractionService] Resultado da deserialização: {(deserializedResult != null ? "OK" : "NULL")}"
+                    $"[ParameterExtractionService] Deserialization result: {(deserializedResult != null ? "OK" : "NULL")}"
                 );
 
-                // Log das propriedades desserializadas para debug
+                // Log deserialized properties for debugging
                 if (deserializedResult != null)
                 {
                     var properties = targetType.GetProperties();
@@ -126,7 +126,7 @@ namespace ProAgil.Domain.Agent
                 return deserializedResult!;
             }
 
-            // Se não, usar IA para transformar
+            // If not, use AI to transform
             var typePropertiesDescription = ParameterInfoBuilder.GetTypePropertiesDescription(
                 targetType
             );

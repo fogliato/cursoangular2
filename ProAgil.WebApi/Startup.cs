@@ -42,7 +42,7 @@ namespace ProAgil.WebApi
                 options.Lockout.MaxFailedAccessAttempts = 5;
             });
 
-            //Configurações para trabalhar com Identity core
+            // Configuration for working with Identity Core
             builder = new IdentityBuilder(builder.UserType, typeof(Role), builder.Services);
             builder.AddEntityFrameworkStores<ProAgilContext>();
             builder.AddRoleValidator<RoleValidator<Role>>();
@@ -55,7 +55,7 @@ namespace ProAgil.WebApi
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
 
-            //configurações para trabalhar com jwt
+            // Configuration for working with JWT
             var tokenValue =
                 Configuration.GetSection("AppSettings:Token").Value
                 ?? throw new InvalidOperationException(
@@ -83,14 +83,14 @@ namespace ProAgil.WebApi
             services.AddControllers();
             services.AddEndpointsApiExplorer();
 
-            // Registrar AgentService usando factory para resolver dependências corretamente
+            // Register AgentService using factory to resolve dependencies correctly
             services.AddScoped<IAgentService>(sp =>
             {
                 var apiExplorer = sp.GetRequiredService<IApiDescriptionGroupCollectionProvider>();
                 return new AgentService(sp, apiExplorer);
             });
 
-            // Adicionar a configuração do Swagger
+            // Add Swagger configuration
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc(
@@ -99,22 +99,22 @@ namespace ProAgil.WebApi
                     {
                         Title = "ProAgil API",
                         Version = "v1",
-                        Description = "API do ProAgil - Gerenciamento de Eventos",
+                        Description = "ProAgil API - Event Management",
                         Contact = new Microsoft.OpenApi.Models.OpenApiContact
                         {
-                            Name = "Seu Nome",
-                            Email = "seu.email@exemplo.com",
+                            Name = "Your Name",
+                            Email = "your.email@example.com",
                         },
                     }
                 );
 
-                // Configuração para o Swagger usar o token JWT
+                // Configuration for Swagger to use JWT token
                 c.AddSecurityDefinition(
                     "Bearer",
                     new Microsoft.OpenApi.Models.OpenApiSecurityScheme
                     {
                         Description =
-                            "JWT Authorization header usando Bearer scheme. Exemplo: \"Bearer {token}\"",
+                            "JWT Authorization header using Bearer scheme. Example: \"Bearer {token}\"",
                         Name = "Authorization",
                         In = Microsoft.OpenApi.Models.ParameterLocation.Header,
                         Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,

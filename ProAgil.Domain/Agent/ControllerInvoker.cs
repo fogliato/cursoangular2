@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace ProAgil.Domain.Agent
 {
     /// <summary>
-    /// Serviço responsável por invocar controllers via reflection
+    /// Service responsible for invoking controllers via reflection
     /// </summary>
     public interface IControllerInvoker
     {
@@ -51,7 +51,7 @@ namespace ProAgil.Domain.Agent
             if (controllerType == null)
             {
                 throw new InvalidOperationException(
-                    $"Controller '{fullControllerName}' não encontrado."
+                    $"Controller '{fullControllerName}' not found."
                 );
             }
 
@@ -70,7 +70,7 @@ namespace ProAgil.Domain.Agent
             if (method == null)
             {
                 throw new InvalidOperationException(
-                    $"Action '{actionName}' não encontrada no controller '{fullControllerName}'."
+                    $"Action '{actionName}' not found in controller '{fullControllerName}'."
                 );
             }
 
@@ -91,7 +91,7 @@ namespace ProAgil.Domain.Agent
             );
             var result = method.Invoke(controllerInstance, methodParams);
 
-            // Processar resultado
+            // Process result
             if (result is Task taskResult)
             {
                 await taskResult.ConfigureAwait(false);

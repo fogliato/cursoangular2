@@ -3,14 +3,14 @@ using System;
 namespace ProAgil.Domain.Agent
 {
     /// <summary>
-    /// Utilitários para trabalhar com tipos
+    /// Utilities for working with types
     /// </summary>
     public static class TypeHelper
     {
         public static string GetExampleValue(Type type)
         {
             if (type == typeof(string))
-                return "\"exemplo\"";
+                return "\"example\"";
             if (type == typeof(int) || type == typeof(int?))
                 return "123";
             if (type == typeof(bool) || type == typeof(bool?))

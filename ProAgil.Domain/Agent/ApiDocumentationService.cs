@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 namespace ProAgil.Domain.Agent
 {
     /// <summary>
-    /// Serviço responsável por gerar documentação da API
+    /// Service responsible for generating API documentation
     /// </summary>
     public interface IApiDocumentationService
     {
@@ -26,9 +26,9 @@ namespace ProAgil.Domain.Agent
         public string GenerateApiDocumentation()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("# API Endpoints Disponíveis\n");
+            sb.AppendLine("# Available API Endpoints\n");
 
-            // Usar o API Explorer para obter todos os endpoints com documentação Swagger
+            // Use API Explorer to get all endpoints with Swagger documentation
             var apiDescriptions = _apiExplorer
                 .ApiDescriptionGroups.Items.SelectMany(g => g.Items)
                 .Where(api =>
@@ -58,20 +58,20 @@ namespace ProAgil.Domain.Agent
                     var route = api.RelativePath;
 
                     sb.AppendLine($"\n### [{httpMethod}] {actionName}");
-                    sb.AppendLine($"Rota: {route}");
+                    sb.AppendLine($"Route: {route}");
 
-                    // Obter documentação XML do método
+                    // Get XML documentation from method
                     var methodInfo = actionDescriptor.MethodInfo;
                     var xmlDoc = GetXmlDocumentation(methodInfo);
                     if (!string.IsNullOrEmpty(xmlDoc))
                     {
-                        sb.AppendLine($"Descrição: {xmlDoc}");
+                        sb.AppendLine($"Description: {xmlDoc}");
                     }
 
-                    // Listar parâmetros com suas descrições
+                    // List parameters with their descriptions
                     if (api.ParameterDescriptions.Any())
                     {
-                        sb.AppendLine("Parâmetros:");
+                        sb.AppendLine("Parameters:");
                         foreach (var param in api.ParameterDescriptions)
                         {
                             var paramType = param.Type?.Name ?? "object";
@@ -80,7 +80,7 @@ namespace ProAgil.Domain.Agent
 
                             sb.AppendLine($"  - {paramName} ({paramType}) [{source}]");
 
-                            // Se for um objeto complexo, listar suas propriedades
+                            // If it's a complex object, list its properties
                             if (
                                 param.Type != null
                                 && param.Type.IsClass
@@ -93,7 +93,7 @@ namespace ProAgil.Domain.Agent
                                 );
                                 if (properties.Length > 0 && properties.Length <= 20)
                                 {
-                                    sb.AppendLine($"    Propriedades de {paramType}:");
+                                    sb.AppendLine($"    Properties of {paramType}:");
                                     foreach (var prop in properties)
                                     {
                                         sb.AppendLine(
@@ -111,7 +111,7 @@ namespace ProAgil.Domain.Agent
 
             var documentation = sb.ToString();
             Console.WriteLine(
-                $"[ApiDocumentationService] Documentação completa gerada: {documentation.Length} caracteres, {groupedByController.Count()} controllers"
+                $"[ApiDocumentationService] Complete documentation generated: {documentation.Length} characters, {groupedByController.Count()} controllers"
             );
             return documentation;
         }
@@ -120,7 +120,7 @@ namespace ProAgil.Domain.Agent
         {
             try
             {
-                // Tentar obter de [Description]
+                // Try to get from [Description]
                 var descAttr =
                     method
                         .GetCustomAttributes(false)
@@ -130,7 +130,7 @@ namespace ProAgil.Domain.Agent
                 if (descAttr != null && !string.IsNullOrEmpty(descAttr.Description))
                     return descAttr.Description;
 
-                // Tentar obter das tags XML via reflection no assembly
+                // Try to get from XML tags via reflection in the assembly
                 var xmlFile = Path.Combine(
                     AppContext.BaseDirectory,
                     $"{method.DeclaringType?.Assembly.GetName().Name}.xml"

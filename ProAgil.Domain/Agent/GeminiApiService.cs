@@ -4,7 +4,7 @@ using Microsoft.SemanticKernel.ChatCompletion;
 namespace ProAgil.Domain.Agent
 {
     /// <summary>
-    /// Serviço responsável por interagir com a API Gemini com retry logic
+    /// Service responsible for interacting with the Gemini API with retry logic
     /// </summary>
     public class GeminiApiService
     {
@@ -22,13 +22,13 @@ namespace ProAgil.Domain.Agent
                 try
                 {
                     Console.WriteLine(
-                        $"[GeminiApiService] Tentativa {attempt}/{maxRetries} de chamada à API Gemini..."
+                        $"[GeminiApiService] Attempt {attempt}/{maxRetries} to call Gemini API..."
                     );
 
                     var result = await chatService.GetChatMessageContentAsync(chat);
 
                     Console.WriteLine(
-                        $"[GeminiApiService] Chamada bem-sucedida na tentativa {attempt}"
+                        $"[GeminiApiService] Successful call on attempt {attempt}"
                     );
                     return result;
                 }
@@ -37,14 +37,14 @@ namespace ProAgil.Domain.Agent
                 {
                     lastException = ex;
                     Console.WriteLine(
-                        $"[GeminiApiService] Erro 503 na tentativa {attempt}: Serviço temporariamente indisponível"
+                        $"[GeminiApiService] Error 503 on attempt {attempt}: Service temporarily unavailable"
                     );
 
                     if (attempt < maxRetries)
                     {
-                        var delay = delaySeconds * attempt; // Backoff exponencial
+                        var delay = delaySeconds * attempt; // Exponential backoff
                         Console.WriteLine(
-                            $"[GeminiApiService] Aguardando {delay} segundos antes de tentar novamente..."
+                            $"[GeminiApiService] Waiting {delay} seconds before retrying..."
                         );
                         await Task.Delay(delay * 1000);
                     }
@@ -52,14 +52,14 @@ namespace ProAgil.Domain.Agent
                 catch (Exception ex)
                 {
                     Console.WriteLine(
-                        $"[GeminiApiService] Erro na tentativa {attempt}: {ex.Message}"
+                        $"[GeminiApiService] Error on attempt {attempt}: {ex.Message}"
                     );
                     throw;
                 }
             }
 
             throw new Exception(
-                $"Falha após {maxRetries} tentativas. Último erro: {lastException?.Message}",
+                $"Failed after {maxRetries} attempts. Last error: {lastException?.Message}",
                 lastException
             );
         }

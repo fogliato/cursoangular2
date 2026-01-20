@@ -5,7 +5,7 @@ using System.Text;
 namespace ProAgil.Domain.Agent
 {
     /// <summary>
-    /// Utilitário para construir informações sobre parâmetros
+    /// Utility for building parameter information
     /// </summary>
     public static class ParameterInfoBuilder
     {
@@ -15,9 +15,9 @@ namespace ProAgil.Domain.Agent
             foreach (var param in parameters)
             {
                 var paramTypeName = param.ParameterType.Name;
-                sb.AppendLine($"\n## Parâmetro: {param.Name} (Tipo: {paramTypeName})");
+                sb.AppendLine($"\n## Parameter: {param.Name} (Type: {paramTypeName})");
 
-                // Se for um objeto complexo, listar suas propriedades com mais detalhes
+                // If it's a complex object, list its properties with more details
                 if (param.ParameterType.IsClass && param.ParameterType != typeof(string))
                 {
                     var properties = param.ParameterType.GetProperties(
@@ -26,20 +26,20 @@ namespace ProAgil.Domain.Agent
 
                     if (properties.Length > 0)
                     {
-                        sb.AppendLine($"Propriedades de {paramTypeName}:");
+                        sb.AppendLine($"Properties of {paramTypeName}:");
                         foreach (var prop in properties)
                         {
                             var propTypeName = prop.PropertyType.Name;
 
-                            // Verificar se é nullable
+                            // Check if nullable
                             var isNullable =
                                 Nullable.GetUnderlyingType(prop.PropertyType) != null
                                 || !prop.PropertyType.IsValueType;
                             var nullableIndicator = isNullable
-                                ? " (opcional, pode ser null)"
-                                : " (obrigatório)";
+                                ? " (optional, can be null)"
+                                : " (required)";
 
-                            // Tipos especiais
+                            // Special types
                             if (
                                 prop.PropertyType == typeof(DateTime)
                                 || prop.PropertyType == typeof(DateTime?)
@@ -49,7 +49,7 @@ namespace ProAgil.Domain.Agent
                                     $"  - {prop.Name}: {propTypeName}{nullableIndicator}"
                                 );
                                 sb.AppendLine(
-                                    $"    Formato: 'yyyy-MM-ddTHH:mm:ss' (ex: '2025-11-18T10:30:00')"
+                                    $"    Format: 'yyyy-MM-ddTHH:mm:ss' (e.g.: '2025-11-18T10:30:00')"
                                 );
                             }
                             else if (
@@ -60,7 +60,7 @@ namespace ProAgil.Domain.Agent
                             {
                                 var innerType = prop.PropertyType.GetGenericArguments()[0].Name;
                                 sb.AppendLine(
-                                    $"  - {prop.Name}: Lista de {innerType}{nullableIndicator}"
+                                    $"  - {prop.Name}: List of {innerType}{nullableIndicator}"
                                 );
                             }
                             else
@@ -74,7 +74,7 @@ namespace ProAgil.Domain.Agent
                 }
                 else
                 {
-                    sb.AppendLine($"Tipo simples: {paramTypeName}");
+                    sb.AppendLine($"Simple type: {paramTypeName}");
                 }
             }
             return sb.ToString();

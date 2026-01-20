@@ -2,7 +2,7 @@ using System;
 
 namespace ProAgil.Domain.Agent
 {
-    // Classes de suporte para execução multi-etapa
+    // Support classes for multi-step execution
     public class ExecutionPlan
     {
         public bool IsMultiStep { get; set; }

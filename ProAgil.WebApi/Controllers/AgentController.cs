@@ -16,10 +16,10 @@ namespace ProAgil.WebApi.Controllers
         }
 
         /// <summary>
-        /// Processa uma mensagem do usuário usando o agente inteligente
+        /// Processes a user message using the intelligent agent
         /// </summary>
-        /// <param name="request">A mensagem a ser processada</param>
-        /// <returns>O resultado do processamento</returns>
+        /// <param name="request">The message to be processed</param>
+        /// <returns>The processing result</returns>
         [HttpPost("process")]
         [AllowAnonymous]
         public async Task<IActionResult> ProcessMessage([FromBody] AgentRequest request)
@@ -29,23 +29,23 @@ namespace ProAgil.WebApi.Controllers
                 if (string.IsNullOrWhiteSpace(request?.Message))
                 {
                     return BadRequest(
-                        new { success = false, message = "A mensagem não pode estar vazia." }
+                        new { success = false, message = "The message cannot be empty." }
                     );
                 }
 
-                Console.WriteLine($"[AgentController] Recebida mensagem: {request.Message}");
+                Console.WriteLine($"[AgentController] Received message: {request.Message}");
                 var result = await _agentService.ProcessMessage(request.Message);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[AgentController] Erro: {ex.Message}");
+                Console.WriteLine($"[AgentController] Error: {ex.Message}");
                 return StatusCode(
                     StatusCodes.Status500InternalServerError,
                     new
                     {
                         success = false,
-                        message = "Falha ao processar a mensagem",
+                        message = "Failed to process the message",
                         error = ex.Message,
                     }
                 );
@@ -53,7 +53,7 @@ namespace ProAgil.WebApi.Controllers
         }
 
         /// <summary>
-        /// Endpoint de verificação de saúde do agente
+        /// Agent health check endpoint
         /// </summary>
         [HttpGet("health")]
         [AllowAnonymous]
@@ -64,12 +64,12 @@ namespace ProAgil.WebApi.Controllers
     }
 
     /// <summary>
-    /// Request DTO para o endpoint do agente
+    /// Request DTO for the agent endpoint
     /// </summary>
     public class AgentRequest
     {
         /// <summary>
-        /// A mensagem do usuário a ser processada pelo agente
+        /// The user message to be processed by the agent
         /// </summary>
         public string Message { get; set; } = string.Empty;
     }
